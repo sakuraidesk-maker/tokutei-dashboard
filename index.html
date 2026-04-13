@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特定技能支援事業 ダッシュボード</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8f7f4;
+  --surface:#ffffff;
+  --surface2:#f2f1ee;
+  --border:#e8e6e1;
+  --border2:#d4d1ca;
+  --text:#1c1917;
+  --text2:#6b6760;
+  --text3:#a8a5a0;
+  --accent:#2563eb;
+  --accent2:#1d4ed8;
+  --accent-bg:#eff6ff;
+  --accent-border:#bfdbfe;
+  --green:#16a34a;
+  --green-bg:#f0fdf4;
+  --amber:#d97706;
+  --amber-bg:#fffbeb;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --purple:#7c3aed;
+  --purple-bg:#f5f3ff;
+  --teal:#0d9488;
+  --teal-bg:#f0fdfa;
+  --r-sm:6px;
+  --r-md:10px;
+  --r-lg:16px;
+  --r-xl:20px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 20px 48px rgba(0,0,0,.12),0 8px 16px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== LAYOUT ===== */
+.layout{display:flex;min-height:100vh}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;overflow-y:auto;
+}
+.sb-logo{
+  padding:1.5rem 1.25rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.sb-logo-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  font-size:13px;font-weight:600;margin-bottom:.625rem;
+  letter-spacing:-.5px;
+}
+.sb-logo-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.sb-logo-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.sb-section{padding:.875rem 0}
+.sb-section+.sb-section{border-top:1px solid var(--border)}
+.sb-section-title{
+  font-size:10px;font-weight:600;letter-spacing:.1em;
+  color:var(--text3);text-transform:uppercase;
+  padding:0 1.25rem;margin-bottom:.375rem;
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 1.25rem;cursor:pointer;
+  color:var(--text2);font-size:13px;font-weight:400;
+  border-left:2px solid transparent;
+  transition:all .15s;border-radius:0;
+}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{
+  background:var(--accent-bg);color:var(--accent);
+  border-left-color:var(--accent);font-weight:500;
+}
+.nav-icon{
+  width:16px;height:16px;flex-shrink:0;opacity:.6;
+}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{
+  margin-left:auto;font-size:10px;font-weight:600;
+  padding:1px 6px;border-radius:20px;
+  background:var(--red-bg);color:var(--red);
+}
+.nav-badge.zero{background:var(--surface2);color:var(--text3)}
+
+.sb-stats{padding:1rem 1.25rem}
+.sb-stat-label{font-size:10px;color:var(--text3);margin-bottom:3px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.sb-stat-val{font-size:22px;font-weight:300;color:var(--text);letter-spacing:-.5px;font-family:'DM Serif Display',serif}
+.sb-prog{background:var(--border);border-radius:3px;height:3px;margin-top:6px;overflow:hidden}
+.sb-prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s ease}
+
+/* ===== MAIN ===== */
+.main{flex:1;min-width:0;padding:2rem 2.5rem}
+
+/* ===== PAGE HEADER ===== */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.page-eyebrow{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);font-weight:400;letter-spacing:-.3px;line-height:1.2}
+.page-sub{font-size:13px;color:var(--text2);margin-top:4px}
+.hdr-actions{display:flex;gap:8px;align-items:center;padding-top:4px}
+
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 16px;font-size:13px;font-weight:500;
+  border:1px solid var(--border2);border-radius:var(--r-md);
+  background:var(--surface);color:var(--text);
+  cursor:pointer;font-family:'DM Sans',sans-serif;
+  transition:all .15s;white-space:nowrap;
+}
+.btn:hover{background:var(--surface2);border-color:var(--border2)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn.danger{color:var(--red);border-color:#fecaca}
+.btn.danger:hover{background:var(--red-bg)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--text2)}
+.btn.ghost:hover{background:var(--surface2);color:var(--text)}
+.btn.sm{padding:5px 12px;font-size:12px;border-radius:var(--r-sm)}
+
+/* ===== STATS GRID ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.25rem;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow .2s;
+}
+.stat-card:hover{box-shadow:var(--shadow-md)}
+.stat-eyebrow{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.5rem}
+.stat-number{font-family:'DM Serif Display',serif;font-size:36px;font-weight:400;line-height:1;letter-spacing:-1px}
+.stat-sub{font-size:12px;color:var(--text2);margin-top:6px}
+.stat-prog{background:var(--border);border-radius:2px;height:2px;margin-top:10px;overflow:hidden}
+.stat-prog-fill{height:100%;border-radius:2px;transition:width .4s ease}
+
+/* ===== CARDS ===== */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.5rem;
+  box-shadow:var(--shadow-sm);margin-bottom:1.25rem;
+}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem}
+.card-title{font-size:14px;font-weight:600;color:var(--text)}
+.card-sub{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* ===== GRID ===== */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+
+/* ===== BADGES ===== */
+.badge{
+  display:inline-flex;align-items:center;
+  padding:3px 9px;border-radius:20px;
+  font-size:11px;font-weight:600;white-space:nowrap;
+}
+.s-done{background:var(--green-bg);color:var(--green)}
+.s-wip{background:var(--accent-bg);color:var(--accent)}
+.s-todo{background:var(--surface2);color:var(--text2)}
+.s-hold{background:var(--amber-bg);color:var(--amber)}
+.s-urgent{background:var(--red-bg);color:var(--red)}
+.s-pending{background:var(--purple-bg);color:var(--purple)}
+
+/* ===== TABLE ===== */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text3);text-align:left;padding:8px 12px;
+  background:var(--surface2);border-bottom:1px solid var(--border);
+}
+.tbl th:first-child{border-radius:var(--r-sm) 0 0 0}
+.tbl th:last-child{border-radius:0 var(--r-sm) 0 0}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:top}
+.tbl tr:last-child td{border-bottom:none}
+.tbl.hoverable tr:hover td{background:var(--surface2);cursor:pointer}
+
+/* ===== PROGRESS ===== */
+.prog{background:var(--border);border-radius:2px;height:4px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;transition:width .4s ease}
+
+/* ===== PHASE ROW ===== */
+.phase-row{
+  display:flex;align-items:center;gap:10px;
+  padding:.625rem 0;cursor:pointer;
+}
+.phase-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.phase-name{font-size:13px;font-weight:400;flex:0 0 140px}
+.phase-bar-wrap{flex:1;max-width:160px}
+.phase-count{font-size:11px;color:var(--text3);min-width:40px;text-align:right}
+
+/* ===== ALERT BOX ===== */
+.alert{
+  border-radius:var(--r-md);padding:1rem 1.25rem;
+  margin-bottom:1.25rem;font-size:13px;line-height:1.7;
+}
+.alert-info{background:var(--accent-bg);border:1px solid var(--accent-border);color:#1e40af}
+.alert-title{font-weight:600;font-size:12px;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;opacity:.7}
+
+/* ===== REVENUE TABLE ===== */
+.rev-tbl{width:100%;border-collapse:collapse;font-size:13px}
+.rev-tbl th{background:var(--text);color:#fff;padding:8px 12px;text-align:right;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.rev-tbl th:first-child{text-align:left;border-radius:var(--r-sm) 0 0 0}
+.rev-tbl th:last-child{border-radius:0 var(--r-sm) 0 0}
+.rev-tbl td{padding:9px 12px;border-bottom:1px solid var(--border);text-align:right}
+.rev-tbl td:first-child{text-align:left;color:var(--text2)}
+.rev-tbl .subtotal td{background:var(--surface2);font-weight:600}
+.rev-tbl .total td{background:var(--accent);color:#fff;font-weight:600}
+.rev-tbl .total td:first-child{border-radius:0 0 0 var(--r-sm)}
+.rev-tbl .total td:last-child{border-radius:0 0 var(--r-sm) 0}
+
+/* ===== UPDATE ITEM ===== */
+.upd-item{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.875rem;
+  box-shadow:var(--shadow-sm);
+}
+.upd-meta{font-size:11px;color:var(--text3);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.upd-tag{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;
+  background:var(--accent-bg);color:var(--accent);margin-right:6px;letter-spacing:.03em;
+}
+.upd-text{font-size:13px;line-height:1.7;color:var(--text);white-space:pre-wrap}
+
+/* ===== WEEKLY / APPROVAL CARDS ===== */
+.change-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.875rem;
+  box-shadow:var(--shadow-sm);transition:box-shadow .15s;
+}
+.change-card:hover{box-shadow:var(--shadow-md)}
+.approval-card{
+  background:var(--surface);border:2px solid #fecaca;
+  border-radius:var(--r-lg);padding:1.25rem;margin-bottom:.875rem;
+  box-shadow:var(--shadow-sm);
+}
+.approval-card.resolved{border:1px solid var(--border);opacity:.75}
+
+/* ===== GANTT ===== */
+.gantt-cell{
+  display:inline-block;width:100%;
+  background:var(--accent-bg);border:1px solid var(--accent-border);
+  border-radius:var(--r-sm);padding:3px 8px;
+  font-size:11px;font-weight:500;color:var(--accent);text-align:center;
+}
+.gantt-cell.done{background:var(--green-bg);border-color:#bbf7d0;color:var(--green)}
+
+/* ===== MODAL ===== */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.35);backdrop-filter:blur(4px);
+  z-index:200;align-items:center;justify-content:center;
+}
+.modal-bg.open{display:flex}
+.modal{
+  background:var(--surface);border-radius:var(--r-xl);
+  padding:2rem;width:580px;max-width:95vw;max-height:90vh;
+  overflow-y:auto;box-shadow:var(--shadow-lg);
+  animation:modalIn .2s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.modal-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:1.5rem;letter-spacing:-.3px}
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);margin-bottom:5px}
+.field input,.field select,.field textarea{
+  width:100%;padding:9px 12px;
+  border:1px solid var(--border2);border-radius:var(--r-md);
+  font-size:13px;font-family:'DM Sans',sans-serif;
+  color:var(--text);background:var(--surface);
+  transition:border-color .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+.field textarea{resize:vertical;min-height:72px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+
+/* ===== EMPTY STATE ===== */
+.empty{
+  text-align:center;padding:3.5rem 2rem;
+  color:var(--text3);font-size:13px;
+}
+.empty-icon{font-size:28px;margin-bottom:.75rem;opacity:.4}
+
+/* ===== DIVIDER ===== */
+.divider{border:none;border-top:1px solid var(--border);margin:1.5rem 0}
+
+/* ===== INFO GRID ===== */
+.info-row{display:flex;gap:1rem;padding:.625rem 0;border-bottom:1px solid var(--border)}
+.info-row:last-child{border-bottom:none}
+.info-key{font-size:12px;color:var(--text3);min-width:100px;flex-shrink:0;padding-top:1px}
+.info-val{font-size:13px;color:var(--text);line-height:1.6;flex:1}
+
+/* ===== MISSION BOX ===== */
+.mission-box{
+  background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%);
+  border-radius:var(--r-lg);padding:1.5rem;color:#fff;margin-bottom:1.25rem;
+  position:relative;overflow:hidden;
+}
+.mission-box::after{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,.06);
+}
+.mission-box::before{
+  content:'';position:absolute;bottom:-20px;left:20px;
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(255,255,255,.04);
+}
+.mission-label{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:.5rem}
+.mission-text{font-size:14px;line-height:1.75;opacity:.92;position:relative;z-index:1}
+
+/* ===== TARGET CARDS ===== */
+.target-card{
+  background:var(--surface2);border-radius:var(--r-md);
+  padding:1rem;text-align:center;
+}
+.target-num{font-family:'DM Serif Display',serif;font-size:36px;letter-spacing:-1px;line-height:1;margin-bottom:4px}
+.target-label{font-size:11px;color:var(--text3);font-weight:500}
+.target-note{font-size:11px;color:var(--text2);margin-top:4px;line-height:1.5}
+
+/* ===== SUPPORT ITEMS ===== */
+.support-item{
+  background:var(--surface2);border-radius:var(--r-md);
+  padding:.75rem 1rem;
+}
+.support-num{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.05em;margin-bottom:2px}
+.support-name{font-size:13px;font-weight:500;color:var(--text)}
+.support-timing{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ===== TASK NAME ===== */
+.task-name-cell{font-weight:500;color:var(--text);margin-bottom:2px}
+.task-name-cell.done{text-decoration:line-through;color:var(--text3)}
+.task-detail-cell{font-size:11px;color:var(--text3);line-height:1.5}
+
+@media(max-width:800px){
+  .sidebar{display:none}
+  .main{padding:1.25rem}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">TS</div>
+    <div class="sb-logo-name">特定技能支援事業</div>
+    <div class="sb-logo-sub" id="sb-date"></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-title">ページ</div>
+    <div class="nav-item active" id="nav-overview" onclick="show('overview')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+      事業概要
+    </div>
+    <div class="nav-item" id="nav-tasks" onclick="show('tasks')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+      タスク管理
+    </div>
+    <div class="nav-item" id="nav-weekly" onclick="show('weekly')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+      先週の変更
+    </div>
+    <div class="nav-item" id="nav-approvals" onclick="show('approvals')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v4M8 10v4M2 8h4M10 8h4"/></svg>
+      上司への確認事項
+      <span class="nav-badge zero" id="approval-count">0</span>
+    </div>
+    <div class="nav-item" id="nav-revenue" onclick="show('revenue')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l3-4 3 2 3-5 3 3"/></svg>
+      収益シミュレーション
+    </div>
+    <div class="nav-item" id="nav-competitors" onclick="show('competitors')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5" cy="8" r="3"/><circle cx="11" cy="8" r="3"/></svg>
+      競合分析
+    </div>
+    <div class="nav-item" id="nav-requests" onclick="show('requests')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v10H2z"/><path d="M5 6h6M5 9h4"/></svg>
+      中川さん業務依頼
+    </div>
+    <div class="nav-item" id="nav-gantt" onclick="show('gantt')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h5M2 8h9M2 12h6"/><rect x="7" y="3" width="5" height="2" rx="1"/><rect x="11" y="7" width="3" height="2" rx="1"/><rect x="8" y="11" width="4" height="2" rx="1"/></svg>
+      4月ガント
+    </div>
+    <div class="nav-item" id="nav-updates" onclick="show('updates')">
+      <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2L9 7M4 9l-2 5 5-2"/><path d="M9 7l-5 2"/></svg>
+      更新ログ
+    </div>
+  </div>
+
+  <div class="sb-section" style="margin-top:auto">
+    <div class="sb-stats">
+      <div class="sb-stat-label">全体進捗</div>
+      <div class="sb-stat-val" id="sb-pct">—</div>
+      <div class="sb-prog"><div class="sb-prog-fill" id="sb-prog-fill" style="width:0%"></div></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:6px" id="sb-stat-detail"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div class="main" id="main"></div>
+</div>
+
+<!-- ===== TASK MODAL ===== -->
+<div class="modal-bg" id="task-modal">
+<div class="modal">
+  <div class="modal-title" id="tm-title">タスクを追加</div>
+  <input type="hidden" id="tm-id">
+  <div class="field-row">
+    <div class="field"><label>フェーズ</label><select id="tm-phase"></select></div>
+    <div class="field"><label>ステータス</label>
+      <select id="tm-status">
+        <option>完了</option><option>対応中</option><option>未着手</option>
+        <option>保留</option><option>緊急</option><option>承認待ち</option>
+      </select>
+    </div>
+  </div>
+  <div class="field"><label>タスク名</label><input type="text" id="tm-name" placeholder="タスク名を入力"></div>
+  <div class="field"><label>詳細</label><textarea id="tm-detail" placeholder="詳細内容..."></textarea></div>
+  <div class="field"><label>備考・メモ</label><textarea id="tm-note" placeholder="備考・進捗メモ・リンクなど..."></textarea></div>
+  <div class="field-row">
+    <div class="field"><label>担当者</label><input type="text" id="tm-owner" placeholder="例：中川、櫻井"></div>
+    <div class="field"><label>優先度</label>
+      <select id="tm-priority"><option>高</option><option selected>中</option><option>低</option></select>
+    </div>
+  </div>
+  <div class="field"><label>期限</label><input type="date" id="tm-due"></div>
+  <div class="modal-footer">
+    <button class="btn ghost" onclick="closeTaskModal()">キャンセル</button>
+    <button class="btn danger sm" id="tm-del" onclick="deleteTask()" style="display:none">削除</button>
+    <button class="btn primary" onclick="saveTask()">保存する</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== UPDATE MODAL ===== -->
+<div class="modal-bg" id="upd-modal">
+<div class="modal">
+  <div class="modal-title">更新を記録する</div>
+  <div class="field"><label>内容</label><textarea id="um-text" style="min-height:100px" placeholder="進捗・決定事項・課題など..."></textarea></div>
+  <div class="field-row">
+    <div class="field"><label>カテゴリ</label>
+      <select id="um-tag">
+        <option>進捗報告</option><option>問題・課題</option><option>決定事項</option>
+        <option>依頼・連絡</option><option>メモ</option>
+      </select>
+    </div>
+    <div class="field"><label>関連フェーズ</label><select id="um-phase"></select></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn ghost" onclick="document.getElementById('upd-modal').classList.remove('open')">キャンセル</button>
+    <button class="btn primary" onclick="saveUpdate()">記録する</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== WEEKLY MODAL ===== -->
+<div class="modal-bg" id="weekly-modal">
+<div class="modal">
+  <div class="modal-title">先週の変更を追加</div>
+  <div class="field-row">
+    <div class="field"><label>変更種別</label>
+      <select id="wm-type">
+        <option>完了</option><option>変更</option><option>決定</option><option>新規追加</option><option>問題発生</option>
+      </select>
+    </div>
+    <div class="field"><label>関連フェーズ（任意）</label>
+      <select id="wm-phase"><option value="">—</option></select>
+    </div>
+  </div>
+  <div class="field"><label>タイトル</label><input type="text" id="wm-title" placeholder="例：正式申請の追加資料を再提出した"></div>
+  <div class="field"><label>詳細（任意）</label><textarea id="wm-detail" placeholder="変更の背景や詳細..."></textarea></div>
+  <div class="modal-footer">
+    <button class="btn ghost" onclick="document.getElementById('weekly-modal').classList.remove('open')">キャンセル</button>
+    <button class="btn primary" onclick="saveWeekly()">追加する</button>
+  </div>
+</div>
+</div>
+
+<!-- ===== APPROVAL MODAL ===== -->
+<div class="modal-bg" id="approval-modal">
+<div class="modal">
+  <div class="modal-title">上司への確認・判断事項を追加</div>
+  <div class="field"><label>確認・判断してほしい内容</label><input type="text" id="am-question" placeholder="例：料金表のAプランを25,000円に変更してよいか"></div>
+  <div class="field"><label>背景・経緯</label><textarea id="am-background" placeholder="なぜこの判断が必要になったか..."></textarea></div>
+  <div class="field"><label>選択肢・提案（任意）</label><textarea id="am-options" placeholder="例：A案：25,000円　B案：30,000円のまま維持"></textarea></div>
+  <div class="field-row">
+    <div class="field"><label>緊急度</label>
+      <select id="am-urgency"><option>高</option><option selected>中</option><option>低</option></select>
+    </div>
+    <div class="field"><label>関連フェーズ（任意）</label>
+      <select id="am-phase"><option value="">—</option></select>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn ghost" onclick="document.getElementById('approval-modal').classList.remove('open')">キャンセル</button>
+    <button class="btn primary" onclick="saveApproval()">追加する</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const PHASES = ['方針','登録支援機関申請','サービス設計','事業計画','体制','営業準備','人材ソース準備','パイロット','ルール化','拠点整備','集客','オペレーション'];
+const PHASE_COLOR = {'方針':'#7c3aed','登録支援機関申請':'#2563eb','サービス設計':'#0d9488','事業計画':'#d97706','体制':'#16a34a','営業準備':'#dc2626','人材ソース準備':'#6d28d9','パイロット':'#0369a1','ルール化':'#78716c','拠点整備':'#b45309','集客':'#be185d','オペレーション':'#065f46'};
+const SMAP = {'完了':'s-done','対応中':'s-wip','未着手':'s-todo','保留':'s-hold','緊急':'s-urgent','承認待ち':'s-pending'};
+
+const DEFAULT_TASKS = [
+  {id:1,phase:'方針',name:'スキーム方針の文書化',detail:'建設現場作業員＝紹介せず直接採用＋支援のみ　建設事務・管理系＝紹介＋支援も可を明文化',note:'初期は無料職業紹介なし',owner:'',status:'完了',priority:'高',due:''},
+  {id:2,phase:'方針',name:'行政書士へ方針共有',detail:'上記方針が法的に問題ないか最終確認',note:'',owner:'',status:'完了',priority:'高',due:''},
+  {id:3,phase:'方針',name:'社内説明資料の確定',detail:'最終版資料を整え、上長承認をもらう',note:'競合調査中、事業計画書作成',owner:'',status:'完了',priority:'高',due:''},
+  {id:4,phase:'登録支援機関申請',name:'業務依頼書の締結',detail:'行政書士との業務依頼書に署名',note:'2/12支払済',owner:'',status:'完了',priority:'高',due:'2026-02-12'},
+  {id:5,phase:'登録支援機関申請',name:'必要情報記入①②③',detail:'所在地・通訳情報・料金を記入して返送',note:'',owner:'',status:'完了',priority:'高',due:''},
+  {id:6,phase:'登録支援機関申請',name:'支援責任者の経歴証明取得',detail:'中川さんの支援実績証明書を作成・確認資料を準備',note:'提出済　修正あり',owner:'中川',status:'完了',priority:'高',due:''},
+  {id:7,phase:'登録支援機関申請',name:'会社関係書類準備',detail:'登記簿謄本・有料職業紹介許可証・就業規則等を収集',note:'謄本、住民票の送付（石沢さん）2/2送付完了',owner:'石沢',status:'完了',priority:'高',due:''},
+  {id:8,phase:'登録支援機関申請',name:'申請書ドラフト確認',detail:'行政書士作成のドラフトをチェックし修正点を共有',note:'2/3 最新申請書一式完了',owner:'',status:'完了',priority:'高',due:''},
+  {id:9,phase:'登録支援機関申請',name:'正式申請・追加資料対応',detail:'代表者押印／署名後、入管へ申請　追加資料対応',note:'2/11申請済　2/18追加資料の要請有り　2/27再提出',owner:'',status:'対応中',priority:'高',due:'2026-02-27'},
+  {id:10,phase:'サービス設計',name:'支援メニュー一覧作成',detail:'特定技能支援10項目＋オプションを一覧化',note:'基本支援メニュー作成中',owner:'',status:'対応中',priority:'中',due:''},
+  {id:11,phase:'サービス設計',name:'料金表最終版作成',detail:'Aプラン・Bプランなど料金体系を確定',note:'建設業と有料職業紹介　両方で準備予定',owner:'',status:'対応中',priority:'高',due:''},
+  {id:12,phase:'サービス設計',name:'営業資料・パンフレット',detail:'営業向けパンフレット作成',note:'',owner:'',status:'対応中',priority:'中',due:''},
+  {id:13,phase:'サービス設計',name:'ワークフロー（新規開拓）',detail:'テレアポ、業務内容、スケジュール管理のフロー',note:'',owner:'',status:'未着手',priority:'中',due:''},
+  {id:14,phase:'サービス設計',name:'ワークフロー（巡回面談・ビザ更新）',detail:'支援実務のワークフロー',note:'',owner:'中川',status:'未着手',priority:'中',due:''},
+  {id:15,phase:'サービス設計',name:'生活ガイド・オリエンテ資料作成',detail:'来日時説明用の生活ガイドブックのドラフト作成（8時間/4時間版）',note:'受入時は必ず立会い',owner:'',status:'対応中',priority:'中',due:''},
+  {id:16,phase:'事業計画',name:'事業計画書ドラフト完成',detail:'アウトラインに沿ってWordで事業計画を書き上げる',note:'',owner:'',status:'完了',priority:'高',due:''},
+  {id:17,phase:'事業計画',name:'収支シミュレーション作成',detail:'支援人数・単価・人件費等を入力したExcelモデルを作る',note:'特定技能 登録支援機関事業　有料職業紹介優先',owner:'',status:'完了',priority:'高',due:''},
+  {id:18,phase:'事業計画',name:'グループ向けメリット整理',detail:'紹介料ゼロなどグループ会社側のメリットを文章化',note:'建設業向け資料を用意する　2026年10月　戸田さん実習生2名有り',owner:'',status:'対応中',priority:'中',due:'2026-10-01'},
+  {id:19,phase:'体制',name:'支援責任者との雇用契約締結',detail:'中川さんとパート契約を締結',note:'',owner:'中川',status:'完了',priority:'高',due:''},
+  {id:20,phase:'体制',name:'業務分担の決定',detail:'支援責任者・営業窓口・事務の役割を整理',note:'支援責任者：非常勤（中川さん）　支援担当者：常勤（採用）',owner:'',status:'対応中',priority:'高',due:''},
+  {id:21,phase:'体制',name:'業務フロー図作成',detail:'企業問い合わせ〜契約〜支援〜請求までのフローを図解',note:'',owner:'',status:'対応中',priority:'中',due:''},
+  {id:22,phase:'体制',name:'ベトナム語通訳・支援員の募集',detail:'Indeed／クラウドワークスなどに求人を掲載',note:'最初は2人体制',owner:'',status:'保留',priority:'中',due:''},
+  {id:23,phase:'営業準備',name:'ターゲット企業リスト（グループ）',detail:'グループ建設会社および協力会社・下請けの一覧を作る',note:'4月グループの求人を確認',owner:'',status:'未着手',priority:'高',due:'2026-04-30'},
+  {id:24,phase:'営業準備',name:'グループ建設会社説明会',detail:'社内向け事業説明ミーティングを設定・実施',note:'4月上旬頃：資料共有、登録状況',owner:'',status:'未着手',priority:'高',due:'2026-04-10'},
+  {id:25,phase:'営業準備',name:'営業用サービス資料作成',detail:'スライドまたはPDFでサービス説明資料を作成',note:'有料職業紹介_特定技能人材 活用ガイド',owner:'',status:'対応中',priority:'高',due:''},
+  {id:26,phase:'営業準備',name:'自社サイト作成',detail:'自社HPの作成',note:'千葉さん依頼、中川さん画像生成',owner:'千葉/中川',status:'対応中',priority:'高',due:''},
+  {id:27,phase:'営業準備',name:'SNS集客ツールの作成',detail:'建設業用SNS、会社SNSにて求人告知',note:'ジャンさんSNS（個人）、江原さん共有SNS',owner:'ジャン/江原',status:'対応中',priority:'中',due:''},
+  {id:28,phase:'人材ソース準備',name:'海外送出し機関候補リストアップ',detail:'ベトナム等の送り出し機関を洗い出し、候補表を作る',note:'特定技能は送り出し機関からほぼ来ない。帰国後の実習生が主なルート',owner:'',status:'対応中',priority:'中',due:''},
+  {id:29,phase:'人材ソース準備',name:'国内連携先のリストアップ',detail:'監理団体・学校・特定技能団体など連携候補を整理',note:'',owner:'',status:'未着手',priority:'中',due:''},
+  {id:30,phase:'パイロット',name:'初期案件の選定',detail:'グループ建設会社からテスト現場を1〜2件選ぶ',note:'',owner:'',status:'未着手',priority:'中',due:''},
+  {id:31,phase:'パイロット',name:'支援計画書作成',detail:'選定案件ごとに具体的な支援計画を作る',note:'',owner:'',status:'未着手',priority:'中',due:''},
+  {id:32,phase:'ルール化',name:'社内ガイドライン作成',detail:'スキーム・料金・職種区分をガイドラインとして文書化',note:'',owner:'',status:'未着手',priority:'中',due:''},
+  {id:33,phase:'ルール化',name:'関係部署への共有',detail:'総務・経理・営業等に方針とフローを説明',note:'石沢さん共有',owner:'石沢',status:'対応中',priority:'中',due:''},
+  {id:34,phase:'集客',name:'Facebook広告アカウント開設',detail:'ベトナム人求職者への主要集客チャネル',note:'',owner:'櫻井',status:'未着手',priority:'高',due:'2026-04-15'},
+  {id:35,phase:'集客',name:'Zaloアカウント開設',detail:'ベトナム人が日常的に使うメッセージアプリ。連絡手段として必須',note:'',owner:'櫻井',status:'未着手',priority:'高',due:'2026-04-15'},
+  {id:36,phase:'オペレーション',name:'技能実習生→特定技能切り替えフロー整備',detail:'実習修了者を受け入れる際の手続きフロー文書化',note:'',owner:'中川',status:'未着手',priority:'中',due:''},
+];
+
+const COMPETITORS = [
+  {name:'株式会社職人さんドットコム',type:'登録支援機関＋有料職業紹介',field:'建設分野中心',area:'関東（神奈川）',model:'建設現場作業員は紹介料ゼロで受入れ／登録支援機関として生活・就労支援で収益化',monthly:25000,initial:30000,zone:'中〜やや高め',self:true},
+  {name:'合同会社エドミール',type:'登録支援機関＋人材紹介',field:'特定技能全般',area:'関東（東京）',model:'紹介＋支援委託のフルサポート',monthly:15000,initial:300000,zone:'安い〜中',self:false},
+  {name:'株式会社ジャップ・ヒューマン・リソーシズ',type:'人材紹介会社＋登録支援',field:'介護・外食・宿泊',area:'関東（東京）',model:'接客・ホスピタリティ教育付き紹介＋支援',monthly:35000,initial:430000,zone:'高め',self:false},
+  {name:'MIS協同組合',type:'監理団体＋登録支援',field:'技能実習＋特定技能',area:'関東（群馬）',model:'実習と特定技能を一体で管理・支援',monthly:20000,initial:200000,zone:'安い',self:false},
+  {name:'協同組合サクラケアネット',type:'協同組合＋登録支援',field:'介護特化',area:'関東（東京）',model:'介護事業母体で教育・インターンも提供',monthly:25000,initial:300000,zone:'中',self:false},
+  {name:'COCOLOBA協同組合',type:'協同組合＋登録支援',field:'インドネシア人材・介護・農業',area:'関西（兵庫）',model:'自前日本語学校で入国前半年教育',monthly:20000,initial:0,zone:'安い',self:false},
+  {name:'株式会社kedomo',type:'登録支援機関＋紹介',field:'特定技能〜エンジニア',area:'九州（福岡）',model:'成果報酬型紹介＋返金制度あり',monthly:25000,initial:250000,zone:'中',self:false},
+];
+
+const REQUESTS = [
+  {no:1,date:'2026/2/4',task:'受入企業の開拓方法を複数考えてみてください',answer:'①直接営業　②団体連携　③既存制度ルート（技能実習→特定技能切り替え）　④士業連携　⑤情報発信型　⑥紹介型　の複線で進め、短期と中長期を分けて実施。初期は③⑥（即効性）、安定期は②④⑤（信用・継続）',status:'完了'},
+  {no:2,date:'2026/2/4',task:'特定技能の集客方法を複数調べてください',answer:'A：受入企業向け（建設業中心）　B：特定技能外国人向け（人材側）　に分けて8種類の集客方法を整理。',status:'完了'},
+  {no:3,date:'2026/2/4',task:'JACについて調べてください',answer:'JAC（建設技能人材機構）：建設分野の特定技能外国人の受入れ・管理を行う業界団体。受入企業はJAC加入が必須（登録支援機関は加入不要）。実務では登録支援機関がJAC対応の窓口役となることが多い。',status:'完了'},
+  {no:4,date:'2026/2/4',task:'登録が完了するまで特定技能の方を維持できないか？',answer:'登録支援機関は登録完了後でなければ支援業務を行えないため、申請中の段階では受入れ・支援は不可。対応策：登録完了まで既存の登録支援機関へ一時委託。',status:'完了'},
+  {no:5,date:'2026/2/10',task:'建設業の受け入れ企業が準備すること',answer:'①体制づくり（建設業許可・CCUS登録・JAC加入・就業規則整備）②費用準備（JAC年会費5〜24万円、受入負担金12,500円/人・月等）③住環境整備',status:'完了'},
+  {no:6,date:'2026/2/19',task:'各国籍によってビザ申請・更新の方法が違うことについて',answer:'フィリピン：六本木の大使館で受入企業として認証が必要（手間・時間がかかる）。比較的スムーズ：インドネシア・スリランカ（日本語学習に力を入れており送り出しやすい）。',status:'完了'},
+  {no:7,date:'2026/3/4',task:'営業のワークフロー',answer:'企業リスト作成→アプローチ→面談→ヒアリング→制度説明→見積→契約→人材紹介→入管申請→入社→定期支援',status:'完了'},
+  {no:8,date:'2026/3/12',task:'グループ会社に出す営業パンフレット作製（簡易版、詳細版）',answer:'櫻井担当',status:'対応中'},
+  {no:9,date:'2026/3/12',task:'参加したセミナーの内容をまとめる',answer:'作成中',status:'対応中'},
+  {no:10,date:'2026/3/26',task:'営業に行く分野の順番を考えてください',answer:'おすすめ順：①外食業　②飲食料品製造業　③介護　④工業製品製造業　⑤建設　⑥農業　⑦宿泊。まずは外食・食品製造から営業リストを作ってアプローチすると成果が出やすい。',status:'完了'},
+  {no:11,date:'2026/3/31',task:'はるやまさんに聞きたい内容（聞き取り事項整理）',answer:'①人材募集の仕方　②受入先企業への営業方法・パンフ　③オリエンテーション内容・資料　④実際の実務　⑤スケジュール管理（ビザ更新等）　⑥実習生→特定技能切り替え方法　⑦分野ごとの受入企業の負担内容　⑧時間外対応',status:'完了'},
+  {no:12,date:'2026/3/26',task:'人材派遣会社に営業',answer:'資料を作って営業',status:'対応中'},
+  {no:13,date:'2026/3/26',task:'JITCO申し込み　社長に報告',answer:'',status:'未着手'},
+];
+
+const GANTT = [
+  {cat:'インフラ',task:'電話回線（固定）',detail:'新規契約・開通工事',w1:'申込〜審査',w2:'工事日調整',w3:'開通工事',w4:'開通確認',note:'開通まで2〜3週間'},
+  {cat:'制作物',task:'名刺の準備',detail:'デザイン・発注・納品',w1:'デザイン〜発注',w2:'納品',w3:'',w4:'',note:''},
+  {cat:'制作物',task:'1枚パンフレット',detail:'企業向けサービス案内',w1:'原稿',w2:'デザイン〜印刷',w3:'完成',w4:'',note:''},
+  {cat:'制作物',task:'料金・条件詳細資料',detail:'A4・企業向け',w1:'',w2:'作成',w3:'完成',w4:'',note:''},
+  {cat:'制作物',task:'オリエンテーション資料',detail:'支援用 8h/4h版',w1:'',w2:'',w3:'作成',w4:'完成',note:''},
+  {cat:'Web/SNS',task:'HP準備',detail:'構成・制作・公開',w1:'構成・原稿',w2:'制作',w3:'テスト',w4:'公開',note:''},
+  {cat:'Web/SNS',task:'SNS運用開始',detail:'アカウント設定・投稿',w1:'',w2:'',w3:'設定',w4:'運用開始',note:''},
+  {cat:'営業',task:'営業リストの作成',detail:'業種・エリア別',w1:'',w2:'作成',w3:'完成',w4:'',note:''},
+  {cat:'営業',task:'営業開始',detail:'飲食・清掃・倉庫・介護',w1:'',w2:'',w3:'',w4:'営業スタート',note:''},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let tasks = JSON.parse(localStorage.getItem('td3_tasks')||'null') || DEFAULT_TASKS;
+let updates = JSON.parse(localStorage.getItem('td3_updates')||'[]');
+let weeklyChanges = JSON.parse(localStorage.getItem('td3_weekly')||'[]');
+let approvals = JSON.parse(localStorage.getItem('td3_approvals')||'[]');
+let nextId = Math.max(...tasks.map(t=>t.id), 50) + 1;
+let nextApprovalId = approvals.length ? Math.max(...approvals.map(a=>a.id))+1 : 1;
+let currentView = 'overview';
+let filterPhase = null;
+let filterStatus = null;
+
+function save(){
+  localStorage.setItem('td3_tasks', JSON.stringify(tasks));
+  localStorage.setItem('td3_updates', JSON.stringify(updates));
+  localStorage.setItem('td3_weekly', JSON.stringify(weeklyChanges));
+  localStorage.setItem('td3_approvals', JSON.stringify(approvals));
+  updateSidebar();
+}
+
+function updateSidebar(){
+  const total=tasks.length, done=tasks.filter(t=>t.status==='完了').length;
+  const wip=tasks.filter(t=>t.status==='対応中').length;
+  const pct=total?Math.round(done/total*100):0;
+  const el1=document.getElementById('sb-pct');
+  const el2=document.getElementById('sb-prog-fill');
+  const el3=document.getElementById('sb-stat-detail');
+  if(el1)el1.textContent=pct+'%';
+  if(el2)el2.style.width=pct+'%';
+  if(el3)el3.textContent=`完了 ${done}  対応中 ${wip}  全 ${total}`;
+  const pending=approvals.filter(a=>a.status==='未回答').length;
+  const badge=document.getElementById('approval-count');
+  if(badge){
+    badge.textContent=pending;
+    badge.className='nav-badge'+(pending===0?' zero':'');
+  }
+}
+
+// ============================================================
+// NAV
+// ============================================================
+function show(v){
+  currentView=v;
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const el=document.getElementById('nav-'+v);
+  if(el)el.classList.add('active');
+  const fns={overview:renderOverview,tasks:renderTasks,weekly:renderWeekly,approvals:renderApprovals,revenue:renderRevenue,competitors:renderCompetitors,requests:renderRequests,gantt:renderGantt,updates:renderUpdates};
+  if(fns[v])fns[v]();
+  updateSidebar();
+}
+
+// ============================================================
+// 1. 事業概要
+// ============================================================
+function renderOverview(){
+  const total=tasks.length,done=tasks.filter(t=>t.status==='完了').length,wip=tasks.filter(t=>t.status==='対応中').length,pct=total?Math.round(done/total*100):0;
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">登録支援機関</div>
+        <div class="page-title">特定技能支援事業</div>
+        <div class="page-sub">申請手続き中 — 入管申請済（2/11）→ 追加資料再提出（2/27）</div>
+      </div>
+      <div class="hdr-actions">
+        <button class="btn ghost" onclick="openUpdModal()">更新を記録</button>
+        <button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-eyebrow">全体進捗</div>
+        <div class="stat-number" style="color:var(--accent)">${pct}<span style="font-size:18px;opacity:.5">%</span></div>
+        <div class="stat-sub">${done} / ${total} タスク完了</div>
+        <div class="stat-prog"><div class="stat-prog-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-eyebrow">完了</div>
+        <div class="stat-number" style="color:var(--green)">${done}</div>
+        <div class="stat-sub">タスク</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-eyebrow">対応中</div>
+        <div class="stat-number" style="color:var(--accent)">${wip}</div>
+        <div class="stat-sub">タスク</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-eyebrow">未着手</div>
+        <div class="stat-number" style="color:var(--text2)">${tasks.filter(t=>t.status==='未着手').length}</div>
+        <div class="stat-sub">タスク</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="mission-box">
+          <div class="mission-label">事業ミッション</div>
+          <div class="mission-text">外国人特定技能人材を「適材適所」で受け入れ、定着率の高い就労支援事業を構築する。単なる紹介屋ではなく、継続的な伴走支援で受入企業・外国人双方に価値を提供する。</div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">事業ポジション</div></div>
+          <div class="info-row"><div class="info-key">①登録支援機関</div><div class="info-val">法定10項目の支援を受入企業から委託で提供</div></div>
+          <div class="info-row"><div class="info-key">②有料職業紹介</div><div class="info-val">非建設分野で新規開拓・人材マッチング</div></div>
+          <div class="info-row"><div class="info-key">③建設分野</div><div class="info-val">グループ・知人企業向け支援のみに特化（紹介料なし）</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div class="card-title">中期目標</div></div>
+          <div class="grid-2" style="gap:10px;margin-bottom:1rem">
+            <div class="target-card">
+              <div class="target-num" style="color:var(--red)">40</div>
+              <div class="target-label">建設分野</div>
+              <div class="target-note">グループ・知人企業限定<br>紹介料なし</div>
+            </div>
+            <div class="target-card">
+              <div class="target-num" style="color:var(--accent)">160</div>
+              <div class="target-label">非建設分野</div>
+              <div class="target-note">飲食・清掃・倉庫・介護<br>有料職業紹介</div>
+            </div>
+          </div>
+          <div style="text-align:center;padding:.875rem;background:var(--accent-bg);border-radius:var(--r-md);border:1px solid var(--accent-border)">
+            <span style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--accent)">200名</span>
+            <span style="font-size:13px;color:var(--text2);margin-left:6px">月次ストック型収益モデルを構築</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" style="margin-bottom:1.25rem">
+          <div class="card-header"><div class="card-title">フェーズ別進捗</div></div>
+          ${PHASES.map(p=>{
+            const pts=tasks.filter(t=>t.phase===p);
+            if(!pts.length)return'';
+            const d=pts.filter(t=>t.status==='完了').length;
+            const pc=Math.round(d/pts.length*100);
+            return`<div class="phase-row" onclick="filterPhase='${p}';show('tasks')">
+              <div class="phase-dot" style="background:${PHASE_COLOR[p]||'#aaa'}"></div>
+              <div class="phase-name">${p}</div>
+              <div class="phase-bar-wrap"><div class="prog"><div class="prog-fill" style="width:${pc}%;background:${PHASE_COLOR[p]||'var(--accent)'}"></div></div></div>
+              <div class="phase-count">${d}/${pts.length}</div>
+            </div>`;
+          }).join('')}
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">要対応タスク</div><div class="card-sub">対応中・緊急のタスク</div></div>
+          </div>
+          ${tasks.filter(t=>t.status==='対応中'||t.status==='緊急').slice(0,6).map(t=>`
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:.625rem 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openTaskModal(${t.id})">
+              <span class="badge ${SMAP[t.status]||'s-todo'}" style="flex-shrink:0;margin-top:1px">${t.status}</span>
+              <div>
+                <div style="font-size:13px;font-weight:500">${t.name}</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:2px">${t.phase}${t.owner?' · '+t.owner:''}${t.due?' · '+t.due:''}</div>
+              </div>
+            </div>`).join('')}
+          ${tasks.filter(t=>t.status==='対応中'||t.status==='緊急').length===0?'<div class="empty" style="padding:1.5rem">対応中のタスクはありません</div>':''}
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">特定技能支援 法定10項目</div></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px">
+        ${[['1','事前ガイダンス','入国前・オンライン可'],['2','出入国時の送迎','入国時・帰国時'],['3','住居確保・生活インフラ','入国前〜直後'],['4','生活オリエンテーション','入国後1週間以内（8時間）'],['5','公的手続き同行','入国後1〜2週間'],['6','相談・苦情対応','月1回以上＋随時'],['7','日本語学習機会の提供','入国直後＋半年ごと'],['8','日本人との交流促進','年数回'],['9','転職支援（やむを得ない場合）','発生時のみ'],['10','定期面談・行政通報','3ヶ月に1回以上']].map(([n,item,timing])=>`
+          <div class="support-item">
+            <div class="support-num">${n}</div>
+            <div class="support-name">${item}</div>
+            <div class="support-timing">${timing}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// 2. タスク管理
+// ============================================================
+function renderTasks(){
+  const phases=filterPhase?[filterPhase]:PHASES;
+  let html=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">進捗管理</div>
+        <div class="page-title">${filterPhase?filterPhase:'全タスクリスト'}</div>
+        <div class="page-sub">${tasks.length} タスク · クリックで編集</div>
+      </div>
+      <div class="hdr-actions">
+        ${filterPhase?`<button class="btn ghost sm" onclick="filterPhase=null;renderTasks()">× 解除</button>`:''}
+        <select class="btn" onchange="filterStatus=this.value||null;renderTasks()" style="padding:8px 12px">
+          <option value="">全ステータス</option>
+          ${['完了','対応中','未着手','保留','緊急','承認待ち'].map(s=>`<option ${filterStatus===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>
+      </div>
+    </div>`;
+
+  phases.forEach(phase=>{
+    let pts=tasks.filter(t=>t.phase===phase);
+    if(filterStatus)pts=pts.filter(t=>t.status===filterStatus);
+    if(!pts.length)return;
+    const done=pts.filter(t=>t.status==='完了').length;
+    const pct=Math.round(done/pts.length*100);
+    html+=`<div style="margin-bottom:2rem">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:.75rem">
+        <div style="width:10px;height:10px;border-radius:50%;background:${PHASE_COLOR[phase]||'#aaa'};flex-shrink:0"></div>
+        <div style="font-size:15px;font-weight:600">${phase}</div>
+        <div style="flex:1;max-width:200px"><div class="prog"><div class="prog-fill" style="width:${pct}%;background:${PHASE_COLOR[phase]||'var(--accent)'}"></div></div></div>
+        <div style="font-size:12px;color:var(--text3)">${done}/${pts.length}</div>
+      </div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-sm)">
+        <table class="tbl hoverable">
+          <thead><tr>
+            <th style="width:34%">タスク</th><th style="width:10%">ステータス</th>
+            <th style="width:8%">担当</th><th style="width:8%">期限</th>
+            <th style="width:6%">優先</th><th>備考</th>
+          </tr></thead><tbody>
+          ${pts.map(t=>`<tr onclick="openTaskModal(${t.id})">
+            <td>
+              <div class="task-name-cell ${t.status==='完了'?'done':''}">${t.name}</div>
+              ${t.detail?`<div class="task-detail-cell">${t.detail.substring(0,55)}${t.detail.length>55?'…':''}</div>`:''}
+            </td>
+            <td><span class="badge ${SMAP[t.status]||'s-todo'}">${t.status}</span></td>
+            <td style="font-size:12px;color:var(--text2)">${t.owner||'—'}</td>
+            <td style="font-size:12px;color:var(--text2)">${t.due||'—'}</td>
+            <td style="font-size:12px;font-weight:600;color:${t.priority==='高'?'var(--red)':t.priority==='中'?'var(--amber)':'var(--text3)'}">${t.priority}</td>
+            <td style="font-size:11px;color:var(--text2);line-height:1.5">${(t.note||'').substring(0,55)}${(t.note||'').length>55?'…':''}</td>
+          </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  });
+  document.getElementById('main').innerHTML=html;
+}
+
+// ============================================================
+// 3. 先週の変更
+// ============================================================
+function renderWeekly(){
+  const items=[...weeklyChanges].reverse();
+  const typeColor={完了:'var(--green)',変更:'var(--accent)',決定:'var(--amber)',新規追加:'var(--teal)',問題発生:'var(--red)'};
+  const typeBg={完了:'var(--green-bg)',変更:'var(--accent-bg)',決定:'var(--amber-bg)',新規追加:'var(--teal-bg)',問題発生:'var(--red-bg)'};
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">週次レポート</div>
+        <div class="page-title">先週の変更</div>
+        <div class="page-sub">直近7日間に変更・更新された内容</div>
+      </div>
+      <div class="hdr-actions">
+        <button class="btn primary" onclick="openWeeklyModal()">+ 変更を追加</button>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      <div class="alert-title">この画面について</div>
+      先週1週間で変更・決定・進展した内容をまとめて上司に共有するためのページです。「+ 変更を追加」するか、Claudeに「◯◯が変更になった」と伝えれば自動で追記されます。
+    </div>
+
+    ${items.length===0?`<div class="empty"><div class="empty-icon">📋</div>まだ変更記録がありません<br>「+ 変更を追加」から記録してください</div>`:''}
+    ${items.map((w,i)=>`
+      <div class="change-card">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:${typeBg[w.type]||'var(--surface2)'};color:${typeColor[w.type]||'var(--text2)'}">${w.type}</span>
+            ${w.phase?`<span style="font-size:11px;font-weight:500;color:var(--text2);background:var(--surface2);padding:3px 10px;border-radius:20px">${w.phase}</span>`:''}
+            <span style="font-size:11px;color:var(--text3)">${w.date}</span>
+          </div>
+          <button class="btn danger sm" onclick="deleteWeekly(${weeklyChanges.length-1-i})">削除</button>
+        </div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">${w.title}</div>
+        ${w.detail?`<div style="font-size:13px;color:var(--text2);line-height:1.7">${w.detail}</div>`:''}
+      </div>`).join('')}`;
+}
+
+function deleteWeekly(i){if(!confirm('削除しますか？'))return;weeklyChanges.splice(i,1);save();renderWeekly();}
+
+// ============================================================
+// 4. 上司への確認事項
+// ============================================================
+function renderApprovals(){
+  const pending=approvals.filter(a=>a.status==='未回答');
+  const answered=approvals.filter(a=>a.status!=='未回答').reverse();
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">マネジメント</div>
+        <div class="page-title">上司への確認・判断事項</div>
+        <div class="page-sub">承認待ち ${pending.length} 件</div>
+      </div>
+      <div class="hdr-actions">
+        <button class="btn primary" onclick="openApprovalModal()">+ 確認事項を追加</button>
+      </div>
+    </div>
+
+    ${pending.length>0?`
+    <div style="margin-bottom:2rem">
+      <div style="font-size:13px;font-weight:600;margin-bottom:.875rem;display:flex;align-items:center;gap:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--red)"></div>
+        判断待ち（${pending.length}件）
+      </div>
+      ${pending.map(a=>`
+        <div class="approval-card">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem">
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+                <span class="badge s-urgent">要判断</span>
+                <span style="font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:${a.urgency==='高'?'var(--red-bg)':a.urgency==='中'?'var(--amber-bg)':'var(--surface2)'};color:${a.urgency==='高'?'var(--red)':a.urgency==='中'?'var(--amber)':'var(--text2)'}">緊急度：${a.urgency}</span>
+                ${a.phase?`<span style="font-size:11px;color:var(--text3)">${a.phase}</span>`:''}
+                <span style="font-size:11px;color:var(--text3)">${a.date}</span>
+              </div>
+              <div style="font-size:15px;font-weight:600;margin-bottom:6px">${a.question}</div>
+              ${a.background?`<div style="font-size:13px;color:var(--text2);line-height:1.7;border-left:3px solid #fecaca;padding-left:10px;margin-bottom:8px">${a.background}</div>`:''}
+              ${a.options?`<div style="background:var(--surface2);border-radius:var(--r-md);padding:.75rem;font-size:12px;color:var(--text2);line-height:1.7"><strong style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)">選択肢・提案</strong><br>${a.options}</div>`:''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+              <button class="btn primary sm" onclick="resolveApproval(${a.id},'承認')">承認</button>
+              <button class="btn sm" onclick="resolveApproval(${a.id},'要相談')">要相談</button>
+              <button class="btn danger sm" onclick="deleteApproval(${a.id})">削除</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    ${answered.length>0?`
+    <div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:.875rem;display:flex;align-items:center;gap:6px">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--green)"></div>
+        回答済み（${answered.length}件）
+      </div>
+      ${answered.map(a=>`
+        <div class="approval-card resolved">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap">
+            <span class="badge ${a.status==='承認'?'s-done':'s-hold'}">${a.status}</span>
+            ${a.phase?`<span style="font-size:11px;color:var(--text3)">${a.phase}</span>`:''}
+            <span style="font-size:11px;color:var(--text3)">${a.date}</span>
+          </div>
+          <div style="font-size:13px;font-weight:500">${a.question}</div>
+          ${a.resolvedNote?`<div style="font-size:12px;color:var(--text2);margin-top:4px">${a.resolvedNote}</div>`:''}
+        </div>`).join('')}
+    </div>`:''}
+
+    ${pending.length===0&&answered.length===0?`<div class="empty"><div class="empty-icon">✓</div>確認事項はありません</div>`:''}`;
+}
+
+function resolveApproval(id,status){
+  const note=prompt(`${status}のメモ（任意）:`,'');
+  const a=approvals.find(x=>x.id===id);
+  if(a){a.status=status;a.resolvedNote=note||'';}
+  save();renderApprovals();
+}
+function deleteApproval(id){if(!confirm('削除しますか？'))return;approvals=approvals.filter(a=>a.id!==id);save();renderApprovals();}
+
+// ============================================================
+// 5. 収益シミュレーション
+// ============================================================
+function renderRevenue(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">財務計画</div>
+        <div class="page-title">収益シミュレーション</div>
+        <div class="page-sub">支援人数 200名 MAX達成時の試算</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-eyebrow">月次ストック（200名時）</div><div class="stat-number" style="color:var(--accent);font-size:28px">500万</div><div class="stat-sub">円/月</div></div>
+      <div class="stat-card"><div class="stat-eyebrow">年間ストック収益</div><div class="stat-number" style="color:var(--accent);font-size:28px">6,000万</div><div class="stat-sub">円/年</div></div>
+      <div class="stat-card"><div class="stat-eyebrow">年間紹介料</div><div class="stat-number" style="color:var(--green);font-size:28px">1,200万</div><div class="stat-sub">円/年（200名÷5年）</div></div>
+      <div class="stat-card"><div class="stat-eyebrow">合計（安定後）</div><div class="stat-number" style="color:var(--amber);font-size:28px">8,200万</div><div class="stat-sub">円/年〜</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><div class="card-title">収益内訳（200名達成時）</div></div>
+        <table class="rev-tbl">
+          <thead><tr><th>収益項目</th><th>単価・前提</th><th>年間収益</th></tr></thead>
+          <tbody>
+            <tr><td>登録支援委託料（建設 40名）</td><td style="text-align:right">25,000円/人・月</td><td>1,200万円</td></tr>
+            <tr><td>登録支援委託料（非建設 160名）</td><td style="text-align:right">25,000円/人・月</td><td>4,800万円</td></tr>
+            <tr class="subtotal"><td>ストック収益 小計</td><td></td><td>6,000万円</td></tr>
+            <tr><td>有料職業紹介料</td><td style="text-align:right">年収×15〜20%（年40名）</td><td>約1,200万円</td></tr>
+            <tr><td>在留申請スポット（認定・変更）</td><td style="text-align:right">60,000円/人・回</td><td>1,200万円</td></tr>
+            <tr><td>在留申請スポット（更新）</td><td style="text-align:right">40,000円/人・回</td><td>800万円/年</td></tr>
+            <tr><td>その他オプション</td><td style="text-align:right">各種</td><td>200万円〜</td></tr>
+            <tr class="total"><td>合計（200名達成・安定時）</td><td></td><td>約8,200万円/年〜</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">立ち上げシミュレーション</div></div>
+        <table class="rev-tbl">
+          <thead><tr><th>期間</th><th>支援人数</th><th>年間概算</th></tr></thead>
+          <tbody>
+            <tr><td>初年度上半期（〜6ヶ月）</td><td style="text-align:right">0→20名</td><td>約510万円</td></tr>
+            <tr><td>初年度下半期（〜12ヶ月）</td><td style="text-align:right">20→50名</td><td>約1,500万円</td></tr>
+            <tr><td>2年目（〜24ヶ月）</td><td style="text-align:right">50→120名</td><td>約3,690万円</td></tr>
+            <tr><td>3年目（〜36ヶ月）</td><td style="text-align:right">120→200名</td><td>約6,400万円</td></tr>
+            <tr class="total"><td>4年目以降（安定後）</td><td style="text-align:right">200名</td><td>約8,200万円/年〜</td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:1.25rem">
+          <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:.625rem">人数拡大の前提条件</div>
+          <div style="font-size:13px;color:var(--text2);line-height:2">
+            ① 登録支援機関認定取得<br>
+            ② 送り出し機関2〜3社提携<br>
+            ③ 営業（飛び込み・紹介・HP・SNS）<br>
+            ④ 支援担当者確保（週30h以上常勤）<br>
+            ⑤ 在日人材の活用も並行検討
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// 6. 競合分析
+// ============================================================
+function renderCompetitors(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">市場調査</div>
+        <div class="page-title">競合分析</div>
+        <div class="page-sub">${COMPETITORS.length} 社の競合情報</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tbl">
+        <thead><tr>
+          <th>会社名</th><th>区分</th><th>分野</th><th>エリア</th>
+          <th style="text-align:right">月額（円）</th><th style="text-align:right">初期費用</th><th>価格帯</th>
+        </tr></thead>
+        <tbody>
+          ${COMPETITORS.map(c=>`<tr>
+            <td>
+              <div style="font-weight:600;font-size:13px">${c.name}</div>
+              ${c.self?`<span class="badge s-urgent" style="font-size:10px;margin-top:3px">自社</span>`:''}
+            </td>
+            <td><span style="font-size:11px;background:var(--surface2);padding:3px 8px;border-radius:var(--r-sm);color:var(--text2)">${c.type}</span></td>
+            <td style="font-size:12px;color:var(--text2)">${c.field}</td>
+            <td style="font-size:12px;color:var(--text3)">${c.area}</td>
+            <td style="text-align:right;font-size:13px;font-weight:600">${c.monthly?c.monthly.toLocaleString():'—'}</td>
+            <td style="text-align:right;font-size:13px">${c.initial?c.initial.toLocaleString():'—'}</td>
+            <td><span class="badge ${c.zone.includes('高')?'s-urgent':c.zone.includes('安')?'s-done':'s-wip'}">${c.zone}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">ビジネスモデル詳細</div></div>
+      ${COMPETITORS.map(c=>`
+        <div class="info-row">
+          <div class="info-key" style="font-weight:500">${c.name.replace('株式会社','').replace('合同会社','').replace('協同組合','').trim().substring(0,10)}</div>
+          <div class="info-val">${c.model}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ============================================================
+// 7. 中川さん業務依頼
+// ============================================================
+function renderRequests(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">業務管理</div>
+        <div class="page-title">中川さん業務依頼リスト</div>
+        <div class="page-sub">${REQUESTS.length} 件の依頼</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tbl">
+        <thead><tr>
+          <th style="width:4%">No</th><th style="width:8%">依頼日</th>
+          <th style="width:30%">依頼・調査内容</th><th>回答・進捗</th><th style="width:8%">状態</th>
+        </tr></thead>
+        <tbody>
+          ${REQUESTS.map(r=>`<tr>
+            <td style="color:var(--text3);font-size:12px">${r.no}</td>
+            <td style="font-size:12px;color:var(--text2);white-space:nowrap">${r.date}</td>
+            <td style="font-weight:500">${r.task}</td>
+            <td style="font-size:12px;color:var(--text2);line-height:1.7">${r.answer||'<span style="color:var(--text3)">—</span>'}</td>
+            <td><span class="badge ${r.status==='完了'?'s-done':r.status==='対応中'?'s-wip':'s-todo'}">${r.status}</span></td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+// ============================================================
+// 8. ガントチャート
+// ============================================================
+function renderGantt(){
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">スケジュール</div>
+        <div class="page-title">4月ガントチャート</div>
+        <div class="page-sub">2026年4月 週次スケジュール</div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="overflow-x:auto">
+        <table class="tbl" style="min-width:720px">
+          <thead><tr>
+            <th>カテゴリ</th><th>タスク</th><th>内容</th>
+            <th style="text-align:center;width:10%">W1<br><span style="font-weight:400;font-size:10px">4/1-7</span></th>
+            <th style="text-align:center;width:10%">W2<br><span style="font-weight:400;font-size:10px">4/8-14</span></th>
+            <th style="text-align:center;width:10%">W3<br><span style="font-weight:400;font-size:10px">4/15-21</span></th>
+            <th style="text-align:center;width:10%">W4<br><span style="font-weight:400;font-size:10px">4/22-30</span></th>
+            <th>備考</th>
+          </tr></thead>
+          <tbody>
+            ${GANTT.map(r=>`<tr>
+              <td style="font-weight:600;white-space:nowrap;font-size:12px">${r.cat}</td>
+              <td style="white-space:nowrap">${r.task}</td>
+              <td style="font-size:11px;color:var(--text2)">${r.detail}</td>
+              ${['w1','w2','w3','w4'].map(w=>r[w]?`<td style="padding:6px 8px"><span class="gantt-cell ${['完成','完了','確認','開始'].some(k=>r[w].includes(k))?'done':''}">${r[w]}</span></td>`:'<td></td>').join('')}
+              <td style="font-size:11px;color:var(--text3)">${r.note}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// 9. 更新ログ
+// ============================================================
+function renderUpdates(){
+  const all=[...updates].reverse();
+  document.getElementById('main').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">記録</div>
+        <div class="page-title">更新ログ</div>
+        <div class="page-sub">${updates.length} 件の記録</div>
+      </div>
+      <div class="hdr-actions"><button class="btn primary" onclick="openUpdModal()">+ 更新を記録</button></div>
+    </div>
+    ${all.length===0?`<div class="empty"><div class="empty-icon">✏️</div>まだ更新ログがありません</div>`:''}
+    ${all.map((u,i)=>`
+      <div class="upd-item">
+        <div class="upd-meta">
+          <span><span class="upd-tag">${u.tag}</span>${u.phase?` ${u.phase} · `:' '}${u.date}</span>
+          <button class="btn danger sm" onclick="delUpdate(${updates.length-1-i})">削除</button>
+        </div>
+        <div class="upd-text">${u.text}</div>
+      </div>`).join('')}`;
+}
+
+// ============================================================
+// TASK MODAL
+// ============================================================
+function openTaskModal(id){
+  document.getElementById('tm-phase').innerHTML=PHASES.map(p=>`<option value="${p}">${p}</option>`).join('');
+  if(id){
+    const t=tasks.find(x=>x.id===id);
+    document.getElementById('tm-title').textContent='タスクを編集';
+    document.getElementById('tm-id').value=id;
+    document.getElementById('tm-phase').value=t.phase;
+    document.getElementById('tm-status').value=t.status;
+    document.getElementById('tm-name').value=t.name;
+    document.getElementById('tm-detail').value=t.detail||'';
+    document.getElementById('tm-note').value=t.note||'';
+    document.getElementById('tm-owner').value=t.owner||'';
+    document.getElementById('tm-priority').value=t.priority||'中';
+    document.getElementById('tm-due').value=t.due||'';
+    document.getElementById('tm-del').style.display='inline-flex';
+  }else{
+    document.getElementById('tm-title').textContent='タスクを追加';
+    document.getElementById('tm-id').value='';
+    ['tm-name','tm-detail','tm-note','tm-owner','tm-due'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('tm-status').value='未着手';
+    document.getElementById('tm-priority').value='中';
+    document.getElementById('tm-del').style.display='none';
+  }
+  document.getElementById('task-modal').classList.add('open');
+}
+function closeTaskModal(){document.getElementById('task-modal').classList.remove('open')}
+function saveTask(){
+  const id=parseInt(document.getElementById('tm-id').value)||null;
+  const t={id:id||nextId++,phase:document.getElementById('tm-phase').value,status:document.getElementById('tm-status').value,name:document.getElementById('tm-name').value.trim(),detail:document.getElementById('tm-detail').value,note:document.getElementById('tm-note').value,owner:document.getElementById('tm-owner').value,priority:document.getElementById('tm-priority').value,due:document.getElementById('tm-due').value};
+  if(!t.name)return alert('タスク名を入力してください');
+  if(id){const i=tasks.findIndex(x=>x.id===id);tasks[i]=t;}else tasks.push(t);
+  save();closeTaskModal();show(currentView);
+}
+function deleteTask(){if(!confirm('削除しますか？'))return;tasks=tasks.filter(t=>t.id!==parseInt(document.getElementById('tm-id').value));save();closeTaskModal();show(currentView);}
+
+// ============================================================
+// UPDATE MODAL
+// ============================================================
+function openUpdModal(){
+  document.getElementById('um-phase').innerHTML=['全体',...PHASES].map(p=>`<option>${p}</option>`).join('');
+  document.getElementById('um-text').value='';
+  document.getElementById('upd-modal').classList.add('open');
+}
+function saveUpdate(){
+  const text=document.getElementById('um-text').value.trim();
+  if(!text)return alert('内容を入力してください');
+  const now=new Date();
+  const date=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  const ph=document.getElementById('um-phase').value;
+  updates.push({date,tag:document.getElementById('um-tag').value,phase:ph==='全体'?'':ph,text});
+  save();document.getElementById('upd-modal').classList.remove('open');
+  if(currentView==='updates')renderUpdates();else show(currentView);
+}
+function delUpdate(i){if(!confirm('削除しますか？'))return;updates.splice(i,1);save();renderUpdates();}
+
+// ============================================================
+// WEEKLY MODAL
+// ============================================================
+function openWeeklyModal(){
+  document.getElementById('wm-phase').innerHTML=['—',...PHASES].map(p=>`<option value="${p==='—'?'':p}">${p}</option>`).join('');
+  document.getElementById('wm-title').value='';
+  document.getElementById('wm-detail').value='';
+  document.getElementById('weekly-modal').classList.add('open');
+}
+function saveWeekly(){
+  const title=document.getElementById('wm-title').value.trim();
+  if(!title)return alert('タイトルを入力してください');
+  const now=new Date();
+  weeklyChanges.push({date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,type:document.getElementById('wm-type').value,phase:document.getElementById('wm-phase').value,title,detail:document.getElementById('wm-detail').value});
+  save();document.getElementById('weekly-modal').classList.remove('open');renderWeekly();
+}
+
+// ============================================================
+// APPROVAL MODAL
+// ============================================================
+function openApprovalModal(){
+  document.getElementById('am-phase').innerHTML=['—',...PHASES].map(p=>`<option value="${p==='—'?'':p}">${p}</option>`).join('');
+  ['am-question','am-background','am-options'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('am-urgency').value='中';
+  document.getElementById('approval-modal').classList.add('open');
+}
+function saveApproval(){
+  const question=document.getElementById('am-question').value.trim();
+  if(!question)return alert('確認内容を入力してください');
+  const now=new Date();
+  approvals.push({id:nextApprovalId++,date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,question,background:document.getElementById('am-background').value,options:document.getElementById('am-options').value,urgency:document.getElementById('am-urgency').value,phase:document.getElementById('am-phase').value,status:'未回答',resolvedNote:''});
+  save();document.getElementById('approval-modal').classList.remove('open');renderApprovals();
+}
+
+// close on bg
+['task-modal','upd-modal','weekly-modal','approval-modal'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+});
+
+// Init
+document.getElementById('sb-date').textContent=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
+show('overview');
+</script>
+</body>
+</html>
