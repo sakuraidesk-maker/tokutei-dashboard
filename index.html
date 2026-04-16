@@ -40,8 +40,48 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 
+/* ===== LOGIN SCREEN ===== */
+#login-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;background:var(--bg);
+}
+#login-screen.hidden{display:none}
+.login-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-xl);padding:3rem 2.5rem;
+  width:380px;max-width:90vw;box-shadow:var(--shadow-lg);
+  text-align:center;
+}
+.login-logo{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:56px;height:56px;border-radius:14px;
+  background:var(--accent);color:#fff;
+  font-size:20px;font-weight:600;margin-bottom:1.25rem;
+  letter-spacing:-.5px;
+}
+.login-card h1{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);margin-bottom:4px;letter-spacing:-.3px}
+.login-card .login-sub{font-size:13px;color:var(--text3);margin-bottom:2rem}
+.login-card input{
+  width:100%;padding:11px 14px;margin-bottom:.75rem;
+  border:1px solid var(--border2);border-radius:var(--r-md);
+  font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);
+  background:var(--surface);transition:border-color .15s;
+}
+.login-card input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.login-card .login-btn{
+  width:100%;padding:11px;margin-top:.5rem;
+  background:var(--accent);color:#fff;border:none;border-radius:var(--r-md);
+  font-size:14px;font-weight:600;font-family:'DM Sans',sans-serif;
+  cursor:pointer;transition:background .15s;
+}
+.login-card .login-btn:hover{background:var(--accent2)}
+.login-card .login-btn:disabled{opacity:.5;cursor:not-allowed}
+#login-error{color:var(--red);font-size:12px;margin-top:.75rem;min-height:18px}
+
 /* ===== LAYOUT ===== */
 .layout{display:flex;min-height:100vh}
+#app-container{display:none}
+#app-container.visible{display:block}
 
 /* ===== SIDEBAR ===== */
 .sidebar{
@@ -99,6 +139,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .sb-stat-val{font-size:22px;font-weight:300;color:var(--text);letter-spacing:-.5px;font-family:'DM Serif Display',serif}
 .sb-prog{background:var(--border);border-radius:3px;height:3px;margin-top:6px;overflow:hidden}
 .sb-prog-fill{height:100%;background:var(--accent);border-radius:3px;transition:width .4s ease}
+
+/* ===== USER BAR ===== */
+.sb-user{
+  padding:.75rem 1.25rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.sb-user-avatar{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--accent-bg);color:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;flex-shrink:0;
+}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-name{font-size:12px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-role{font-size:10px;color:var(--text3)}
+.sb-logout{
+  background:none;border:none;cursor:pointer;
+  color:var(--text3);font-size:11px;padding:4px 8px;border-radius:var(--r-sm);
+  transition:all .15s;font-family:'DM Sans',sans-serif;
+}
+.sb-logout:hover{background:var(--red-bg);color:var(--red)}
 
 /* ===== MAIN ===== */
 .main{flex:1;min-width:0;padding:2rem 2.5rem}
@@ -343,6 +404,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .task-name-cell.done{text-decoration:line-through;color:var(--text3)}
 .task-detail-cell{font-size:11px;color:var(--text3);line-height:1.5}
 
+/* ===== SYNC INDICATOR ===== */
+.sync-dot{
+  width:8px;height:8px;border-radius:50%;
+  display:inline-block;margin-right:4px;
+}
+.sync-dot.online{background:var(--green)}
+.sync-dot.offline{background:var(--red)}
+
+/* ===== LOADING OVERLAY ===== */
+#loading-overlay{
+  position:fixed;inset:0;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  z-index:9999;
+}
+#loading-overlay.hidden{display:none}
+.loading-spinner{
+  width:32px;height:32px;border:3px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .6s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 @media(max-width:800px){
   .sidebar{display:none}
   .main{padding:1.25rem}
@@ -351,6 +434,27 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </style>
 </head>
 <body>
+
+<!-- ===== LOADING ===== -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="login-screen" class="hidden">
+  <div class="login-card">
+    <div class="login-logo">TS</div>
+    <h1>特定技能支援事業</h1>
+    <p class="login-sub">ダッシュボードにログイン</p>
+    <input type="email" id="login-email" placeholder="メールアドレス" autocomplete="email">
+    <input type="password" id="login-password" placeholder="パスワード" autocomplete="current-password">
+    <button class="login-btn" id="login-btn" onclick="doLogin()">ログイン</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app-container">
 <div class="layout">
 
 <!-- ===== SIDEBAR ===== -->
@@ -410,10 +514,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
       <div style="font-size:11px;color:var(--text3);margin-top:6px" id="sb-stat-detail"></div>
     </div>
   </div>
+
+  <!-- User bar -->
+  <div class="sb-user" id="sb-user">
+    <div class="sb-user-avatar" id="sb-user-avatar">—</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name" id="sb-user-name">—</div>
+      <div class="sb-user-role" id="sb-user-role">—</div>
+    </div>
+    <button class="sb-logout" onclick="doLogout()">ログアウト</button>
+  </div>
 </div>
 
 <!-- ===== MAIN ===== -->
 <div class="main" id="main"></div>
+</div>
 </div>
 
 <!-- ===== TASK MODAL ===== -->
@@ -514,69 +629,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 </div>
 </div>
 
+<!-- ===== SUPABASE SDK ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ============================================================
-// DATA
+// SUPABASE CONFIG
+// ============================================================
+const SUPABASE_URL = 'https://qoobcxqzxnedwbojpyrv.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_5i6roa8W9EJyUcDkWqrZFw__tlNGOWj';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================================
+// CONSTANTS
 // ============================================================
 const PHASES = ['方針','登録支援機関申請','サービス設計','事業計画','体制','営業準備','人材ソース準備','パイロット','ルール化','拠点整備','集客','オペレーション'];
 const PHASE_COLOR = {'方針':'#7c3aed','登録支援機関申請':'#2563eb','サービス設計':'#0d9488','事業計画':'#d97706','体制':'#16a34a','営業準備':'#dc2626','人材ソース準備':'#6d28d9','パイロット':'#0369a1','ルール化':'#78716c','拠点整備':'#b45309','集客':'#be185d','オペレーション':'#065f46'};
 const SMAP = {'完了':'s-done','対応中':'s-wip','未着手':'s-todo','保留':'s-hold','緊急':'s-urgent','承認待ち':'s-pending'};
-
-const DEFAULT_TASKS = [
-  {id:1,phase:'方針',name:'スキーム方針の文書化',detail:'建設現場作業員＝紹介せず直接採用＋支援のみ　建設事務・管理系＝紹介＋支援も可を明文化',note:'初期は無料職業紹介なし',owner:'',status:'完了',priority:'高',due:''},
-  {id:2,phase:'方針',name:'行政書士へ方針共有',detail:'上記方針が法的に問題ないか最終確認',note:'',owner:'',status:'完了',priority:'高',due:''},
-  {id:3,phase:'方針',name:'社内説明資料の確定',detail:'最終版資料を整え、上長承認をもらう',note:'競合調査中、事業計画書作成',owner:'',status:'完了',priority:'高',due:''},
-  {id:4,phase:'登録支援機関申請',name:'業務依頼書の締結',detail:'行政書士との業務依頼書に署名',note:'2/12支払済',owner:'',status:'完了',priority:'高',due:'2026-02-12'},
-  {id:5,phase:'登録支援機関申請',name:'必要情報記入①②③',detail:'所在地・通訳情報・料金を記入して返送',note:'',owner:'',status:'完了',priority:'高',due:''},
-  {id:6,phase:'登録支援機関申請',name:'支援責任者の経歴証明取得',detail:'中川さんの支援実績証明書を作成・確認資料を準備',note:'提出済　修正あり',owner:'中川',status:'完了',priority:'高',due:''},
-  {id:7,phase:'登録支援機関申請',name:'会社関係書類準備',detail:'登記簿謄本・有料職業紹介許可証・就業規則等を収集',note:'謄本、住民票の送付（石沢さん）2/2送付完了',owner:'石沢',status:'完了',priority:'高',due:''},
-  {id:8,phase:'登録支援機関申請',name:'申請書ドラフト確認',detail:'行政書士作成のドラフトをチェックし修正点を共有',note:'2/3 最新申請書一式完了',owner:'',status:'完了',priority:'高',due:''},
-  {id:9,phase:'登録支援機関申請',name:'正式申請・追加資料対応',detail:'代表者押印／署名後、入管へ申請　追加資料対応',note:'2/11申請済　2/18追加資料の要請有り　2/27再提出',owner:'',status:'対応中',priority:'高',due:'2026-02-27'},
-  {id:10,phase:'サービス設計',name:'支援メニュー一覧作成',detail:'特定技能支援10項目＋オプションを一覧化',note:'基本支援メニュー作成中',owner:'',status:'対応中',priority:'中',due:''},
-  {id:11,phase:'サービス設計',name:'料金表最終版作成',detail:'Aプラン・Bプランなど料金体系を確定',note:'建設業と有料職業紹介　両方で準備予定',owner:'',status:'対応中',priority:'高',due:''},
-  {id:12,phase:'サービス設計',name:'営業資料・パンフレット',detail:'営業向けパンフレット作成',note:'',owner:'',status:'対応中',priority:'中',due:''},
-  {id:13,phase:'サービス設計',name:'ワークフロー（新規開拓）',detail:'テレアポ、業務内容、スケジュール管理のフロー',note:'',owner:'',status:'未着手',priority:'中',due:''},
-  {id:14,phase:'サービス設計',name:'ワークフロー（巡回面談・ビザ更新）',detail:'支援実務のワークフロー',note:'',owner:'中川',status:'未着手',priority:'中',due:''},
-  {id:15,phase:'サービス設計',name:'生活ガイド・オリエンテ資料作成',detail:'来日時説明用の生活ガイドブックのドラフト作成（8時間/4時間版）',note:'受入時は必ず立会い',owner:'',status:'対応中',priority:'中',due:''},
-  {id:16,phase:'事業計画',name:'事業計画書ドラフト完成',detail:'アウトラインに沿ってWordで事業計画を書き上げる',note:'',owner:'',status:'完了',priority:'高',due:''},
-  {id:17,phase:'事業計画',name:'収支シミュレーション作成',detail:'支援人数・単価・人件費等を入力したExcelモデルを作る',note:'特定技能 登録支援機関事業　有料職業紹介優先',owner:'',status:'完了',priority:'高',due:''},
-  {id:18,phase:'事業計画',name:'グループ向けメリット整理',detail:'紹介料ゼロなどグループ会社側のメリットを文章化',note:'建設業向け資料を用意する　2026年10月　戸田さん実習生2名有り',owner:'',status:'対応中',priority:'中',due:'2026-10-01'},
-  {id:19,phase:'体制',name:'支援責任者との雇用契約締結',detail:'中川さんとパート契約を締結',note:'',owner:'中川',status:'完了',priority:'高',due:''},
-  {id:20,phase:'体制',name:'業務分担の決定',detail:'支援責任者・営業窓口・事務の役割を整理',note:'支援責任者：非常勤（中川さん）　支援担当者：常勤（採用）',owner:'',status:'対応中',priority:'高',due:''},
-  {id:21,phase:'体制',name:'業務フロー図作成',detail:'企業問い合わせ〜契約〜支援〜請求までのフローを図解',note:'',owner:'',status:'対応中',priority:'中',due:''},
-  {id:22,phase:'体制',name:'ベトナム語通訳・支援員の募集',detail:'Indeed／クラウドワークスなどに求人を掲載',note:'最初は2人体制',owner:'',status:'保留',priority:'中',due:''},
-  {id:23,phase:'営業準備',name:'ターゲット企業リスト（グループ）',detail:'グループ建設会社および協力会社・下請けの一覧を作る',note:'4月グループの求人を確認',owner:'',status:'未着手',priority:'高',due:'2026-04-30'},
-  {id:24,phase:'営業準備',name:'グループ建設会社説明会',detail:'社内向け事業説明ミーティングを設定・実施',note:'4月上旬頃：資料共有、登録状況',owner:'',status:'未着手',priority:'高',due:'2026-04-10'},
-  {id:25,phase:'営業準備',name:'営業用サービス資料作成',detail:'スライドまたはPDFでサービス説明資料を作成',note:'有料職業紹介_特定技能人材 活用ガイド',owner:'',status:'対応中',priority:'高',due:''},
-  {id:26,phase:'営業準備',name:'自社サイト作成',detail:'自社HPの作成',note:'千葉さん依頼、中川さん画像生成',owner:'千葉/中川',status:'対応中',priority:'高',due:''},
-  {id:27,phase:'営業準備',name:'SNS集客ツールの作成',detail:'建設業用SNS、会社SNSにて求人告知',note:'ジャンさんSNS（個人）、江原さん共有SNS',owner:'ジャン/江原',status:'対応中',priority:'中',due:''},
-  {id:28,phase:'人材ソース準備',name:'海外送出し機関候補リストアップ',detail:'ベトナム等の送り出し機関を洗い出し、候補表を作る',note:'特定技能は送り出し機関からほぼ来ない。帰国後の実習生が主なルート',owner:'',status:'対応中',priority:'中',due:''},
-  {id:29,phase:'人材ソース準備',name:'国内連携先のリストアップ',detail:'監理団体・学校・特定技能団体など連携候補を整理',note:'',owner:'',status:'未着手',priority:'中',due:''},
-  {id:30,phase:'パイロット',name:'初期案件の選定',detail:'グループ建設会社からテスト現場を1〜2件選ぶ',note:'',owner:'',status:'未着手',priority:'中',due:''},
-  {id:31,phase:'パイロット',name:'支援計画書作成',detail:'選定案件ごとに具体的な支援計画を作る',note:'',owner:'',status:'未着手',priority:'中',due:''},
-  {id:32,phase:'ルール化',name:'社内ガイドライン作成',detail:'スキーム・料金・職種区分をガイドラインとして文書化',note:'',owner:'',status:'未着手',priority:'中',due:''},
-  {id:33,phase:'ルール化',name:'関係部署への共有',detail:'総務・経理・営業等に方針とフローを説明',note:'石沢さん共有',owner:'石沢',status:'対応中',priority:'中',due:''},
-  {id:34,phase:'集客',name:'Facebook広告アカウント開設',detail:'ベトナム人求職者への主要集客チャネル',note:'',owner:'櫻井',status:'未着手',priority:'高',due:'2026-04-15'},
-  {id:35,phase:'集客',name:'Zaloアカウント開設',detail:'ベトナム人が日常的に使うメッセージアプリ。連絡手段として必須',note:'',owner:'櫻井',status:'未着手',priority:'高',due:'2026-04-15'},
-  {id:36,phase:'オペレーション',name:'技能実習生→特定技能切り替えフロー整備',detail:'実習修了者を受け入れる際の手続きフロー文書化',note:'',owner:'中川',status:'未着手',priority:'中',due:''},
-  {id:37,phase:'体制',name:'監理支援組合の設立手続き着手',detail:'神奈川県中央会窓口を訪問し、組合設立の手続きを確認。必要書類・所要期間・出資金目安・管理支援機関の市場調査を行う。所要期間：約6ヶ月',note:'春山さんレクチャーより。早めに着手することが決定。',owner:'中川',status:'未着手',priority:'高',due:'2026-04-25'},
-  {id:38,phase:'体制',name:'行政書士との顧問契約検討',detail:'特定技能ビザ申請は今後行政書士・弁護士のみ実施可能になる方向。信頼できる行政書士を顧問として確保する。1分野ずつ進めるアドバイスも受けた。',note:'春山さん：何も知らない行政書士との連携は避ける。実績ある行政書士との連携が重要。',owner:'',status:'未着手',priority:'高',due:''},
-  {id:39,phase:'体制',name:'緊急・時間外対応フロー策定',detail:'特定技能生は来日直後1年間は不安が大きく、土日祝日含め緊急連絡が必要。夜9時まで等の時間を定めた対応ルールを文書化する。',note:'春山さん：yokohama ABSは土日祝日問わず夜9時まで対応している。',owner:'中川',status:'未着手',priority:'高',due:''},
-  {id:40,phase:'営業準備',name:'受入企業の選定基準を策定',detail:'ブラック企業を選ぶと支援業務が非常に困難になる。企業選定の基準（労務管理・過去の外国人雇用歴・社長の人柄など）を文書化する。',note:'春山さん：人間関係が最も重要。受入企業がしっかりしていることが支援成功の前提。',owner:'',status:'未着手',priority:'高',due:''},
-  {id:41,phase:'営業準備',name:'神奈川県内飛び込み営業・テレアポの実施',detail:'本社のある神奈川県内で飛び込み営業を実施。食品製造・飲食・介護等の分野を優先。訪問できない地域にはテレアポを実施。',note:'春山さん：口コミ・紹介が最も有効。まず1社実績を作ることが重要。',owner:'',status:'未着手',priority:'高',due:'2026-04-30'},
-  {id:42,phase:'集客',name:'ベトナムFacebookコミュニティでの人材募集',detail:'ベトナム人特定技能転職者の集客にはFacebookコミュニティが最も影響力が強い。まず通訳と受入企業を確保したうえで募集を開始する。',note:'春山さん推奨。在日外国人からの採用ニーズが高い。ベトナムからの新規入国は時間がかかるため在日人材を優先。',owner:'',status:'未着手',priority:'中',due:''},
-  {id:43,phase:'人材ソース準備',name:'日本語学校への営業・連携',detail:'留学生から特定技能への切り替えが可能（N4以上＋分野試験合格）。日本語学校を訪問して特定技能に関する情報提供を行い、連携候補を探す。介護・食品製造・外食が切り替えやすい分野。',note:'中川さんより提案。留学生→特定技能の切り替えは比較的ハードルが低い。',owner:'中川',status:'未着手',priority:'中',due:''},
-  {id:44,phase:'オペレーション',name:'定期面談（3ヶ月に1回）の運用フロー整備',detail:'通訳を伴った対面での巡回訪問が信頼関係構築に不可欠。面談記録フォーマットも作成する。文化的配慮（頭に触れない等）も盛り込む。',note:'春山さん：通訳を介した定期的な対面面談がトラブル防止に最も効果的。',owner:'中川',status:'未着手',priority:'高',due:''},
-  {id:45,phase:'営業準備',name:'名刺500枚の発注',detail:'営業活動開始に向けて名刺を500枚作成・発注する。',note:'春山さんレクチャーにて決定事項として確認。',owner:'',status:'未着手',priority:'中',due:'2026-04-20'},
-  {id:46,phase:'体制',name:'監理支援組合の設立手続き確認（神奈川中央会訪問）',detail:'神奈川中央会窓口を訪問し、組合設立の手続きを確認する。持参情報：本店所在地・業種・出資者数・希望時期・出資金の目安。所要期間は約6ヶ月の見込み。',note:'春山さんレクチャーで決定。管理支援機関として事業拡大するために必須。早めに着手が必要。',owner:'中川',status:'未着手',priority:'高',due:'2026-04-20'},
-  {id:47,phase:'体制',name:'緊急対応フロー・時間外対応ルールの整備',detail:'夜9時まで等の時間を定めた対応ルールを文書化する。土日祝日の連絡体制も整備する。来日直後1年間は特に不安が大きく緊急対応が多い。',note:'春山さんより「緊急時には土日祝日を問わず連絡を取れる状態にしておく必要がある」とのアドバイス。',owner:'中川',status:'未着手',priority:'高',due:''},
-  {id:48,phase:'体制',name:'電話機の設置・発信可能状態にする',detail:'電話機が届き次第、設置作業を行い電話発信可能状態にする。',note:'春山さんレクチャーの決定事項として確認。',owner:'中川',status:'未着手',priority:'高',due:'2026-04-15'},
-  {id:49,phase:'サービス設計',name:'定期面談フロー（3ヶ月に1回）の整備',detail:'通訳を伴った対面巡回訪問のフローを整備する。文化的・習慣的な違いへの配慮事項も文書化する。ブラック企業排除の選定基準も整備する。',note:'春山さんより「定期面談・通訳を伴った対面での巡回訪問が信頼関係構築に不可欠」との強調あり。',owner:'中川',status:'未着手',priority:'高',due:''},
-  {id:50,phase:'人材ソース準備',name:'信頼できる送り出し機関の選定・春山さんへ相談',detail:'許可を得て運営しているだけの送り出し機関ではなく、実際に現場を訪れ実習生のケアを重視している機関を選ぶ。春山さんへ送り出し機関との連携についての相談を依頼。',note:'春山さんより「送り出し機関の質が支援の質を左右する」とのアドバイス。yokohama ABSに相談予定。',owner:'',status:'未着手',priority:'中',due:''},
-  {id:51,phase:'営業準備',name:'日本語学校への営業・連携',detail:'留学生から特定技能への切り替えを促進するため、日本語学校を訪問して特定技能に関する情報提供を行う。N4以上＋分野試験合格で切り替え可能。介護・食品製造・外食が切り替えやすい分野。',note:'春山さんレクチャーで新たに判明した有効な営業戦略。',owner:'',status:'未着手',priority:'中',due:''},
-  {id:52,phase:'営業準備',name:'受入企業の選定基準の整理（ブラック企業排除）',detail:'ブラック企業を選んでしまうと支援業務が非常に困難になる。企業選定の判断基準を文書化する。',note:'春山さんより「企業選定も支援機関の重要な仕事。ブラック企業を選ぶと業務が破綻する」とのアドバイス。',owner:'',status:'未着手',priority:'中',due:''},
-  {id:53,phase:'人材ソース準備',name:'Facebookベトナム人コミュニティでの人材募集準備',detail:'ベトナムのFacebookコミュニティが特定技能転職者の集客に最も影響力が強い。通訳（ジャンさん）と連携して運用する。',note:'春山さんより「ゼロから始める場合、まずベトナムのFacebookコミュニティから募集を始めるのが良い」とのアドバイス。',owner:'ジャン',status:'未着手',priority:'高',due:''},
-];
 
 const COMPETITORS = [
   {name:'株式会社職人さんドットコム',type:'登録支援機関＋有料職業紹介',field:'建設分野中心',area:'関東（神奈川）',model:'建設現場作業員は紹介料ゼロで受入れ／登録支援機関として生活・就労支援で収益化',monthly:25000,initial:30000,zone:'中〜やや高め',self:true},
@@ -624,109 +692,172 @@ const GANTT = [
 // ============================================================
 // STATE
 // ============================================================
-let tasks = JSON.parse(localStorage.getItem('td3_tasks')||'null') || DEFAULT_TASKS;
-let updates = JSON.parse(localStorage.getItem('td3_updates')||'null') || [
-  {
-    date: '2026/4/13 00:00',
-    tag: '進捗報告',
-    phase: '全体',
-    text: `【春山さん（yokohama ABS）レクチャー ハイライト】2026年4月13日
-
-■ 春山さんのプロフィール
-管理団体と登録支援機関の仕事に5年間従事。技能実習生・特定技能生を約200名支援中。ベトナム・インドネシア・ミャンマー・モンゴルの多言語対応。
-
-■ 営業・集客について
-・この仕事はほぼ口コミ・紹介による企業からの紹介が多い。特別な営業資料はない。
-・ゼロから始める場合、ベトナムのFacebookコミュニティが最も影響力が強く、そこからの募集が有効。
-・在日外国人からの採用ニーズが高い（円安でベトナムから来る意欲が低下しているため）。
-・日本語学校への営業・連携が有効な戦略（N4以上＋分野試験合格で特定技能に切り替え可能）。
-
-■ 対象分野について
-・建設業から建設業への転職は過去5〜7年でほとんど見たことがない。
-・技能実習生から同じ企業で特定技能に移行するケースが最も多く現実的。
-・留学生から特定技能に切り替えやすい分野：介護・食品製造・外食。
-・新規参入は一度に多くの分野に手を出さず、1分野ずつ経験を積むことを推奨。
-
-■ 支援運用について
-・定期面談（3ヶ月に1回）は必須。通訳を伴った対面巡回訪問が信頼関係構築に不可欠。
-・緊急対応は来日直後1年間が最も重要。夜9時まで等の時間を定めたルールが必要。
-・土日祝日を問わず連絡を取れる状態にしておくこと。
-・ブラック企業を選ぶと支援業務が破綻する。受入企業の選定が非常に重要。
-・この仕事において人間関係が最も重要。
-
-■ 制度・手続きについて
-・今後、特定技能ビザ申請は行政書士・弁護士のみが実施可能になる方向。
-・建設業：国土交通省の許可＋JAC加入が必須。食品製造業：JAM加入が必要。
-・最初の申請は行政書士に任せてノウハウを蓄積するのが良い。
-・連携する行政書士の質が業務の質を左右する（何も知らない行政書士は避けるべき）。
-
-■ 決定事項
-・監理支援組合の設立に早期着手（神奈川中央会へ訪問・約6ヶ月の手続き）
-・神奈川県内の飛び込み営業＋テレアポで受入企業を開拓
-・名刺500枚を発注・電話機を設置
-・送り出し機関の選定についてyokohama ABSに相談予定`
-  }
-];
-let weeklyChanges = JSON.parse(localStorage.getItem('td3_weekly')||'null') || [
-  {date:'2026/4/13',type:'新規追加',phase:'体制',title:'春山さん（yokohama ABS）よりレクチャーを受講',detail:'現役5年の特定技能支援実務者から直接指導を受けた。組合設立・行政書士連携・定期面談運用・受入企業選定・緊急対応フロー・送り出し機関選定等について重要なアドバイスを得た。'},
-  {date:'2026/4/13',type:'決定',phase:'体制',title:'監理支援組合の設立を早期着手することが決定',detail:'神奈川県での手続きには約6ヶ月かかる見込み。中川さんが神奈川中央会窓口を訪問して手続きを確認する。必要情報：本店所在地・業種・出資者数・希望時期・出資金の目安。'},
-  {date:'2026/4/13',type:'決定',phase:'体制',title:'電話機の設置・名刺500枚の発注が決定',detail:'電話機が届き次第、設置作業を行い電話発信可能状態にする。名刺500枚を発注する。'},
-  {date:'2026/4/13',type:'決定',phase:'営業準備',title:'営業方針：神奈川県内の飛び込み営業＋テレアポで受入企業を開拓することが決定',detail:'まず食品製造・飲食・介護分野を優先。口コミ・紹介が最も有効とのアドバイスを受けた。日本語学校への営業・連携も有効な戦略として新たに追加。'},
-  {date:'2026/4/13',type:'変更',phase:'サービス設計',title:'ビザ申請は行政書士に依頼する方針に変更',detail:'今後、特定技能ビザ申請は行政書士・弁護士のみが実施可能になる方向。最初の申請は行政書士に任せてノウハウを蓄積する。新規参入は一度に多くの分野に手を出さず1分野ずつ経験を積む。'},
-  {date:'2026/4/13',type:'新規追加',phase:'人材ソース準備',title:'ベトナムのFacebookコミュニティが人材集客の最有力チャネルと判明',detail:'yokohama ABSより「ゼロから始める場合、まずベトナムのFacebookコミュニティから募集を始めるのが良い」とのアドバイス。在日外国人からの採用ニーズが高い。円安の影響でベトナムから来る意欲が低下しているため国内在留外国人の活用が重要。'},
-  {date:'2026/4/13',type:'新規追加',phase:'サービス設計',title:'定期面談（3ヶ月に1回）・通訳を伴った巡回訪問が必須と確認',detail:'労働者の不安を抑えトラブルを防ぐために定期面談は必須。通訳を伴った対面での巡回訪問が信頼関係構築に不可欠。緊急対応は来日直後1年間が最も重要。'},
-];
-let approvals = JSON.parse(localStorage.getItem('td3_approvals')||'null') || [
-  {id:1,date:'2026/4/13',question:'監理支援組合の設立に着手してよいか（約6ヶ月・初期費用が発生）',background:'春山さんレクチャーにて、監理支援機関として事業を拡大するには組合設立が必要との助言を受けた。神奈川中央会での手続きに約6ヶ月かかる見込みで、出資金・手続き費用が発生する。早めに着手しないと事業開始が遅れる。',options:'A案：今すぐ中央会に訪問して手続きを開始する（中川さんが4/20目途に訪問予定）\nB案：登録支援機関の認定が下りてから着手する',urgency:'高',phase:'体制',status:'未回答',resolvedNote:''},
-  {id:2,date:'2026/4/13',question:'信頼できる行政書士を顧問として正式契約してよいか',background:'今後、特定技能ビザ申請は行政書士・弁護士のみが実施可能になる方向。春山さんより「連携する行政書士の質が業務の質を左右する。何も知らない行政書士との連携は避けるべき」との強いアドバイスを受けた。現在取引中の行政書士を顧問として正式契約することを検討。',options:'A案：現在の行政書士と顧問契約を結ぶ\nB案：複数の行政書士を比較してから決める',urgency:'中',phase:'体制',status:'未回答',resolvedNote:''},
-  {id:3,date:'2026/4/13',question:'建設業以外（食品製造・飲食・介護）への営業を今すぐ開始してよいか',background:'登録支援機関の認定はまだ下りていないが、春山さんより「受入企業の確保を先に進めておくべき」とのアドバイスを受けた。登録前でも営業・企業開拓・契約の準備は可能。ただし支援業務の開始は認定後となる。',options:'A案：認定前でも営業・企業開拓を今すぐ開始する\nB案：認定が下りてから営業を開始する',urgency:'高',phase:'営業準備',status:'未回答',resolvedNote:''},
-  {id:4,date:'2026/4/13',question:'yokohama ABSの春山さんと顧問・連携契約を結んでよいか',background:'春山さんは現役5年の特定技能支援実務者で送り出し機関との連携も持っている。今後、送り出し機関の紹介・営業資料・業務フローについても改めて資料を送ってもらえる約束をしている。継続的な顧問関係を結ぶことで実務ノウハウの蓄積が加速する可能性がある。',options:'A案：顧問・連携契約を正式に依頼する\nB案：引き続き相談ベースで関係を続ける',urgency:'中',phase:'体制',status:'未回答',resolvedNote:''},
-  {id:5,date:'2026/4/13',question:'支援対象分野の絞り込みをどうするか（春山さんのアドバイスを踏まえて）',background:'春山さんより「新規参入は一度に多くの分野に手を出すのではなく、一つの分野での経験を積んでから他の分野に進むことを勧める」とのアドバイスを受けた。現在は建設・食品製造・飲食・介護を検討しているが、最初に注力する分野を1〜2つに絞るべきか判断が必要。',options:'A案：最初は建設分野（グループ会社）のみに絞る\nB案：食品製造・飲食を最初の新規分野として1分野に絞る\nC案：複数分野を並行して進める（現状維持）',urgency:'中',phase:'サービス設計',status:'未回答',resolvedNote:''},
-];
-let nextId = Math.max(...tasks.map(t=>t.id), 50) + 1;
-let nextApprovalId = approvals.length ? Math.max(...approvals.map(a=>a.id))+1 : 1;
+let tasks = [];
+let updates = [];
+let weeklyChanges = [];
+let approvals = [];
 let currentView = 'overview';
 let filterPhase = null;
 let filterStatus = null;
+let currentUser = null;   // { id, email }
+let currentProfile = null; // { name, role }
 
-function save(){
-  localStorage.setItem('td3_tasks', JSON.stringify(tasks));
-  localStorage.setItem('td3_updates', JSON.stringify(updates));
-  localStorage.setItem('td3_weekly', JSON.stringify(weeklyChanges));
-  localStorage.setItem('td3_approvals', JSON.stringify(approvals));
+// ============================================================
+// AUTH
+// ============================================================
+async function checkAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await loadProfile();
+    showApp();
+  } else {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  document.getElementById('loading-overlay').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app-container').classList.remove('visible');
+}
+
+async function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-container').classList.add('visible');
+  updateUserBar();
+  await loadAllData();
+  setupRealtime();
+  document.getElementById('loading-overlay').classList.add('hidden');
+  show('overview');
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.textContent = '';
+  if (!email || !pass) { errEl.textContent = 'メールアドレスとパスワードを入力してください'; return; }
+  btn.disabled = true;
+  btn.textContent = 'ログイン中...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+  btn.disabled = false;
+  btn.textContent = 'ログイン';
+  if (error) {
+    errEl.textContent = 'ログインに失敗しました: ' + error.message;
+    return;
+  }
+  currentUser = data.user;
+  await loadProfile();
+  showApp();
+}
+
+async function doLogout() {
+  await sb.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  showLogin();
+}
+
+async function loadProfile() {
+  if (!currentUser) return;
+  const { data } = await sb.from('profiles').select('name, role').eq('id', currentUser.id).single();
+  if (data) {
+    currentProfile = data;
+  } else {
+    // Profile not found — create default
+    const name = currentUser.email.split('@')[0];
+    const { data: newProfile } = await sb.from('profiles').insert({ id: currentUser.id, name, role: 'member' }).select().single();
+    currentProfile = newProfile || { name, role: 'member' };
+  }
+}
+
+function updateUserBar() {
+  if (!currentProfile) return;
+  const initial = currentProfile.name.charAt(0);
+  document.getElementById('sb-user-avatar').textContent = initial;
+  document.getElementById('sb-user-name').textContent = currentProfile.name;
+  const roleLabels = { admin: '管理者（上司）', member: 'メンバー', viewer: '閲覧のみ' };
+  document.getElementById('sb-user-role').textContent = roleLabels[currentProfile.role] || currentProfile.role;
+}
+
+function isAdmin() { return currentProfile && currentProfile.role === 'admin'; }
+function canEdit() { return currentProfile && (currentProfile.role === 'admin' || currentProfile.role === 'member'); }
+
+// ============================================================
+// DATA LOADING (from Supabase)
+// ============================================================
+async function loadAllData() {
+  const [t, u, w, a] = await Promise.all([
+    sb.from('tasks').select('*').order('id'),
+    sb.from('updates').select('*').order('id'),
+    sb.from('weekly_changes').select('*').order('id'),
+    sb.from('approvals').select('*').order('id'),
+  ]);
+  tasks = t.data || [];
+  updates = u.data || [];
+  weeklyChanges = w.data || [];
+  approvals = a.data || [];
   updateSidebar();
 }
 
-function updateSidebar(){
-  const total=tasks.length, done=tasks.filter(t=>t.status==='完了').length;
-  const wip=tasks.filter(t=>t.status==='対応中').length;
-  const pct=total?Math.round(done/total*100):0;
-  const el1=document.getElementById('sb-pct');
-  const el2=document.getElementById('sb-prog-fill');
-  const el3=document.getElementById('sb-stat-detail');
-  if(el1)el1.textContent=pct+'%';
-  if(el2)el2.style.width=pct+'%';
-  if(el3)el3.textContent=`完了 ${done}  対応中 ${wip}  全 ${total}`;
-  const pending=approvals.filter(a=>a.status==='未回答').length;
-  const badge=document.getElementById('approval-count');
-  if(badge){
-    badge.textContent=pending;
-    badge.className='nav-badge'+(pending===0?' zero':'');
+// ============================================================
+// REALTIME SUBSCRIPTIONS
+// ============================================================
+function setupRealtime() {
+  sb.channel('db-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => reloadAndRender())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'updates' }, () => reloadAndRender())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'weekly_changes' }, () => reloadAndRender())
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'approvals' }, () => reloadAndRender())
+    .subscribe();
+}
+
+async function reloadAndRender() {
+  await loadAllData();
+  show(currentView);
+}
+
+// ============================================================
+// SIDEBAR
+// ============================================================
+function updateSidebar() {
+  const total = tasks.length, done = tasks.filter(t => t.status === '完了').length;
+  const wip = tasks.filter(t => t.status === '対応中').length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  const el1 = document.getElementById('sb-pct');
+  const el2 = document.getElementById('sb-prog-fill');
+  const el3 = document.getElementById('sb-stat-detail');
+  if (el1) el1.textContent = pct + '%';
+  if (el2) el2.style.width = pct + '%';
+  if (el3) el3.textContent = `完了 ${done}  対応中 ${wip}  全 ${total}`;
+  const pending = approvals.filter(a => a.status === '未回答').length;
+  const badge = document.getElementById('approval-count');
+  if (badge) {
+    badge.textContent = pending;
+    badge.className = 'nav-badge' + (pending === 0 ? ' zero' : '');
   }
 }
 
 // ============================================================
 // NAV
 // ============================================================
-function show(v){
-  currentView=v;
-  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
-  const el=document.getElementById('nav-'+v);
-  if(el)el.classList.add('active');
-  const fns={overview:renderOverview,tasks:renderTasks,weekly:renderWeekly,approvals:renderApprovals,revenue:renderRevenue,competitors:renderCompetitors,requests:renderRequests,gantt:renderGantt,updates:renderUpdates};
-  if(fns[v])fns[v]();
+function show(v) {
+  currentView = v;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('nav-' + v);
+  if (el) el.classList.add('active');
+  const fns = { overview: renderOverview, tasks: renderTasks, weekly: renderWeekly, approvals: renderApprovals, revenue: renderRevenue, competitors: renderCompetitors, requests: renderRequests, gantt: renderGantt, updates: renderUpdates };
+  if (fns[v]) fns[v]();
   updateSidebar();
 }
+
+// ============================================================
+// Helper: edit buttons visibility based on role
+// ============================================================
+function editBtn(html) { return canEdit() ? html : ''; }
+function adminOnly(html) { return isAdmin() ? html : ''; }
 
 // ============================================================
 // 1. 事業概要
@@ -741,8 +872,8 @@ function renderOverview(){
         <div class="page-sub">申請手続き中 — 入管申請済（2/11）→ 追加資料再提出（2/27）</div>
       </div>
       <div class="hdr-actions">
-        <button class="btn ghost" onclick="openUpdModal()">更新を記録</button>
-        <button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>
+        ${editBtn('<button class="btn ghost" onclick="openUpdModal()">更新を記録</button>')}
+        ${editBtn('<button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>')}
       </div>
     </div>
 
@@ -870,7 +1001,7 @@ function renderTasks(){
           <option value="">全ステータス</option>
           ${['完了','対応中','未着手','保留','緊急','承認待ち'].map(s=>`<option ${filterStatus===s?'selected':''}>${s}</option>`).join('')}
         </select>
-        <button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>
+        ${editBtn('<button class="btn primary" onclick="openTaskModal(null)">+ タスク追加</button>')}
       </div>
     </div>`;
 
@@ -928,7 +1059,7 @@ function renderWeekly(){
         <div class="page-sub">直近7日間に変更・更新された内容</div>
       </div>
       <div class="hdr-actions">
-        <button class="btn primary" onclick="openWeeklyModal()">+ 変更を追加</button>
+        ${editBtn('<button class="btn primary" onclick="openWeeklyModal()">+ 変更を追加</button>')}
       </div>
     </div>
 
@@ -946,14 +1077,18 @@ function renderWeekly(){
             ${w.phase?`<span style="font-size:11px;font-weight:500;color:var(--text2);background:var(--surface2);padding:3px 10px;border-radius:20px">${w.phase}</span>`:''}
             <span style="font-size:11px;color:var(--text3)">${w.date}</span>
           </div>
-          <button class="btn danger sm" onclick="deleteWeekly(${weeklyChanges.length-1-i})">削除</button>
+          ${editBtn(`<button class="btn danger sm" onclick="deleteWeekly(${w.id})">削除</button>`)}
         </div>
         <div style="font-size:14px;font-weight:600;margin-bottom:4px">${w.title}</div>
         ${w.detail?`<div style="font-size:13px;color:var(--text2);line-height:1.7">${w.detail}</div>`:''}
       </div>`).join('')}`;
 }
 
-function deleteWeekly(i){if(!confirm('削除しますか？'))return;weeklyChanges.splice(i,1);save();renderWeekly();}
+async function deleteWeekly(id){
+  if(!confirm('削除しますか？'))return;
+  await sb.from('weekly_changes').delete().eq('id', id);
+  await reloadAndRender();
+}
 
 // ============================================================
 // 4. 上司への確認事項
@@ -969,7 +1104,7 @@ function renderApprovals(){
         <div class="page-sub">承認待ち ${pending.length} 件</div>
       </div>
       <div class="hdr-actions">
-        <button class="btn primary" onclick="openApprovalModal()">+ 確認事項を追加</button>
+        ${editBtn('<button class="btn primary" onclick="openApprovalModal()">+ 確認事項を追加</button>')}
       </div>
     </div>
 
@@ -994,9 +1129,9 @@ function renderApprovals(){
               ${a.options?`<div style="background:var(--surface2);border-radius:var(--r-md);padding:.75rem;font-size:12px;color:var(--text2);line-height:1.7"><strong style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)">選択肢・提案</strong><br>${a.options}</div>`:''}
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
-              <button class="btn primary sm" onclick="resolveApproval(${a.id},'承認')">承認</button>
-              <button class="btn sm" onclick="resolveApproval(${a.id},'要相談')">要相談</button>
-              <button class="btn danger sm" onclick="deleteApproval(${a.id})">削除</button>
+              ${adminOnly(`<button class="btn primary sm" onclick="resolveApproval(${a.id},'承認')">承認</button>
+              <button class="btn sm" onclick="resolveApproval(${a.id},'要相談')">要相談</button>`)}
+              ${editBtn(`<button class="btn danger sm" onclick="deleteApproval(${a.id})">削除</button>`)}
             </div>
           </div>
         </div>`).join('')}
@@ -1016,20 +1151,25 @@ function renderApprovals(){
             <span style="font-size:11px;color:var(--text3)">${a.date}</span>
           </div>
           <div style="font-size:13px;font-weight:500">${a.question}</div>
-          ${a.resolvedNote?`<div style="font-size:12px;color:var(--text2);margin-top:4px">${a.resolvedNote}</div>`:''}
+          ${a.resolved_note?`<div style="font-size:12px;color:var(--text2);margin-top:4px">${a.resolved_note}</div>`:''}
         </div>`).join('')}
     </div>`:''}
 
     ${pending.length===0&&answered.length===0?`<div class="empty"><div class="empty-icon">✓</div>確認事項はありません</div>`:''}`;
 }
 
-function resolveApproval(id,status){
-  const note=prompt(`${status}のメモ（任意）:`,'');
-  const a=approvals.find(x=>x.id===id);
-  if(a){a.status=status;a.resolvedNote=note||'';}
-  save();renderApprovals();
+async function resolveApproval(id, status){
+  if (!isAdmin()) { alert('管理者のみ承認できます'); return; }
+  const note = prompt(`${status}のメモ（任意）:`, '');
+  await sb.from('approvals').update({ status, resolved_note: note || '' }).eq('id', id);
+  await reloadAndRender();
 }
-function deleteApproval(id){if(!confirm('削除しますか？'))return;approvals=approvals.filter(a=>a.id!==id);save();renderApprovals();}
+
+async function deleteApproval(id){
+  if(!confirm('削除しますか？'))return;
+  await sb.from('approvals').delete().eq('id', id);
+  await reloadAndRender();
+}
 
 // ============================================================
 // 5. 収益シミュレーション
@@ -1216,14 +1356,14 @@ function renderUpdates(){
         <div class="page-title">更新ログ</div>
         <div class="page-sub">${updates.length} 件の記録</div>
       </div>
-      <div class="hdr-actions"><button class="btn primary" onclick="openUpdModal()">+ 更新を記録</button></div>
+      <div class="hdr-actions">${editBtn('<button class="btn primary" onclick="openUpdModal()">+ 更新を記録</button>')}</div>
     </div>
     ${all.length===0?`<div class="empty"><div class="empty-icon">✏️</div>まだ更新ログがありません</div>`:''}
-    ${all.map((u,i)=>`
+    ${all.map(u=>`
       <div class="upd-item">
         <div class="upd-meta">
           <span><span class="upd-tag">${u.tag}</span>${u.phase?` ${u.phase} · `:' '}${u.date}</span>
-          <button class="btn danger sm" onclick="delUpdate(${updates.length-1-i})">削除</button>
+          ${editBtn(`<button class="btn danger sm" onclick="delUpdate(${u.id})">削除</button>`)}
         </div>
         <div class="upd-text">${u.text}</div>
       </div>`).join('')}`;
@@ -1233,9 +1373,11 @@ function renderUpdates(){
 // TASK MODAL
 // ============================================================
 function openTaskModal(id){
+  if (!canEdit()) return; // viewer cannot edit
   document.getElementById('tm-phase').innerHTML=PHASES.map(p=>`<option value="${p}">${p}</option>`).join('');
   if(id){
     const t=tasks.find(x=>x.id===id);
+    if (!t) return;
     document.getElementById('tm-title').textContent='タスクを編集';
     document.getElementById('tm-id').value=id;
     document.getElementById('tm-phase').value=t.phase;
@@ -1258,77 +1400,162 @@ function openTaskModal(id){
   document.getElementById('task-modal').classList.add('open');
 }
 function closeTaskModal(){document.getElementById('task-modal').classList.remove('open')}
-function saveTask(){
+
+async function saveTask(){
+  if (!canEdit()) return;
   const id=parseInt(document.getElementById('tm-id').value)||null;
-  const t={id:id||nextId++,phase:document.getElementById('tm-phase').value,status:document.getElementById('tm-status').value,name:document.getElementById('tm-name').value.trim(),detail:document.getElementById('tm-detail').value,note:document.getElementById('tm-note').value,owner:document.getElementById('tm-owner').value,priority:document.getElementById('tm-priority').value,due:document.getElementById('tm-due').value};
+  const t={
+    phase:document.getElementById('tm-phase').value,
+    status:document.getElementById('tm-status').value,
+    name:document.getElementById('tm-name').value.trim(),
+    detail:document.getElementById('tm-detail').value,
+    note:document.getElementById('tm-note').value,
+    owner:document.getElementById('tm-owner').value,
+    priority:document.getElementById('tm-priority').value,
+    due:document.getElementById('tm-due').value
+  };
   if(!t.name)return alert('タスク名を入力してください');
-  if(id){const i=tasks.findIndex(x=>x.id===id);tasks[i]=t;}else tasks.push(t);
-  save();closeTaskModal();show(currentView);
+  if(id){
+    await sb.from('tasks').update(t).eq('id', id);
+  } else {
+    await sb.from('tasks').insert(t);
+  }
+  closeTaskModal();
+  await reloadAndRender();
 }
-function deleteTask(){if(!confirm('削除しますか？'))return;tasks=tasks.filter(t=>t.id!==parseInt(document.getElementById('tm-id').value));save();closeTaskModal();show(currentView);}
+
+async function deleteTask(){
+  if(!canEdit()) return;
+  if(!confirm('削除しますか？'))return;
+  const id=parseInt(document.getElementById('tm-id').value);
+  await sb.from('tasks').delete().eq('id', id);
+  closeTaskModal();
+  await reloadAndRender();
+}
 
 // ============================================================
 // UPDATE MODAL
 // ============================================================
 function openUpdModal(){
+  if (!canEdit()) return;
   document.getElementById('um-phase').innerHTML=['全体',...PHASES].map(p=>`<option>${p}</option>`).join('');
   document.getElementById('um-text').value='';
   document.getElementById('upd-modal').classList.add('open');
 }
-function saveUpdate(){
+
+async function saveUpdate(){
+  if (!canEdit()) return;
   const text=document.getElementById('um-text').value.trim();
   if(!text)return alert('内容を入力してください');
   const now=new Date();
   const date=`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   const ph=document.getElementById('um-phase').value;
-  updates.push({date,tag:document.getElementById('um-tag').value,phase:ph==='全体'?'':ph,text});
-  save();document.getElementById('upd-modal').classList.remove('open');
-  if(currentView==='updates')renderUpdates();else show(currentView);
+  await sb.from('updates').insert({
+    date,
+    tag: document.getElementById('um-tag').value,
+    phase: ph==='全体'?'':ph,
+    text,
+    created_by: currentProfile ? currentProfile.name : ''
+  });
+  document.getElementById('upd-modal').classList.remove('open');
+  await reloadAndRender();
 }
-function delUpdate(i){if(!confirm('削除しますか？'))return;updates.splice(i,1);save();renderUpdates();}
+
+async function delUpdate(id){
+  if(!canEdit()) return;
+  if(!confirm('削除しますか？'))return;
+  await sb.from('updates').delete().eq('id', id);
+  await reloadAndRender();
+}
 
 // ============================================================
 // WEEKLY MODAL
 // ============================================================
 function openWeeklyModal(){
+  if (!canEdit()) return;
   document.getElementById('wm-phase').innerHTML=['—',...PHASES].map(p=>`<option value="${p==='—'?'':p}">${p}</option>`).join('');
   document.getElementById('wm-title').value='';
   document.getElementById('wm-detail').value='';
   document.getElementById('weekly-modal').classList.add('open');
 }
-function saveWeekly(){
+
+async function saveWeekly(){
+  if (!canEdit()) return;
   const title=document.getElementById('wm-title').value.trim();
   if(!title)return alert('タイトルを入力してください');
   const now=new Date();
-  weeklyChanges.push({date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,type:document.getElementById('wm-type').value,phase:document.getElementById('wm-phase').value,title,detail:document.getElementById('wm-detail').value});
-  save();document.getElementById('weekly-modal').classList.remove('open');renderWeekly();
+  await sb.from('weekly_changes').insert({
+    date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,
+    type:document.getElementById('wm-type').value,
+    phase:document.getElementById('wm-phase').value,
+    title,
+    detail:document.getElementById('wm-detail').value
+  });
+  document.getElementById('weekly-modal').classList.remove('open');
+  await reloadAndRender();
 }
 
 // ============================================================
 // APPROVAL MODAL
 // ============================================================
 function openApprovalModal(){
+  if (!canEdit()) return;
   document.getElementById('am-phase').innerHTML=['—',...PHASES].map(p=>`<option value="${p==='—'?'':p}">${p}</option>`).join('');
   ['am-question','am-background','am-options'].forEach(i=>document.getElementById(i).value='');
   document.getElementById('am-urgency').value='中';
   document.getElementById('approval-modal').classList.add('open');
 }
-function saveApproval(){
+
+async function saveApproval(){
+  if (!canEdit()) return;
   const question=document.getElementById('am-question').value.trim();
   if(!question)return alert('確認内容を入力してください');
   const now=new Date();
-  approvals.push({id:nextApprovalId++,date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,question,background:document.getElementById('am-background').value,options:document.getElementById('am-options').value,urgency:document.getElementById('am-urgency').value,phase:document.getElementById('am-phase').value,status:'未回答',resolvedNote:''});
-  save();document.getElementById('approval-modal').classList.remove('open');renderApprovals();
+  await sb.from('approvals').insert({
+    date:`${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`,
+    question,
+    background:document.getElementById('am-background').value,
+    options:document.getElementById('am-options').value,
+    urgency:document.getElementById('am-urgency').value,
+    phase:document.getElementById('am-phase').value,
+    status:'未回答',
+    resolved_note:''
+  });
+  document.getElementById('approval-modal').classList.remove('open');
+  await reloadAndRender();
 }
 
-// close on bg
+// ============================================================
+// MODAL CLOSE ON BG CLICK
+// ============================================================
 ['task-modal','upd-modal','weekly-modal','approval-modal'].forEach(id=>{
   document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
 });
 
-// Init
+// ============================================================
+// LOGIN: Enter key support
+// ============================================================
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
+// ============================================================
+// AUTH STATE CHANGE LISTENER
+// ============================================================
+sb.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') {
+    showLogin();
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
 document.getElementById('sb-date').textContent=new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'});
-show('overview');
+checkAuth();
 </script>
 </body>
 </html>
